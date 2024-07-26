@@ -1,0 +1,76 @@
+{
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [
+    {
+      "uuid": "a5b9559c-3bbc-4b05-9a39-2454a4bcfe03",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "d46c8d3d-bea0-4761-8030-f35c4347db9f",
+      "type": "MeshBasicMaterial",
+      "color": 65280,
+      "envMapRotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ],
+      "reflectivity": 1,
+      "refractionRatio": 0.98,
+      "blendColor": 0
+    }
+  ],
+  "object": {
+    "uuid": "c63324b0-1850-4c7a-aac0-bdbfb222e79c",
+    "type": "Actor",
+    "name": "Actor",
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "geometry": "a5b9559c-3bbc-4b05-9a39-2454a4bcfe03",
+    "material": "d46c8d3d-bea0-4761-8030-f35c4347db9f",
+    "script": "ea189bb6-9927-44e4-8d7f-dd956e7369c6"
+  },
+  "name": "Actor",
+  "script": [
+    {
+      "uuid": "ea189bb6-9927-44e4-8d7f-dd956e7369c6",
+      "name": "Actor",
+      "code": "\nlog(self)\n"
+    }
+  ],
+  "state": {}
+}

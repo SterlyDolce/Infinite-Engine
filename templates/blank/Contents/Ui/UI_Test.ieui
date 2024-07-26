@@ -1,0 +1,73 @@
+{
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [
+    {
+      "uuid": "e1a1ca39-3d31-4cfb-a2f4-9bb335a727d3",
+      "type": "PlaneGeometry",
+      "width": 1920,
+      "height": 1080,
+      "widthSegments": 1,
+      "heightSegments": 1
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "f0ec83b6-37e1-463e-996b-0b0436323621",
+      "type": "MeshBasicMaterial",
+      "color": 16777215,
+      "envMapRotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ],
+      "reflectivity": 1,
+      "refractionRatio": 0.98,
+      "blendColor": 0,
+      "visible": false
+    }
+  ],
+  "object": {
+    "uuid": "13a4c82c-9eba-4f42-87aa-b02aa646aa3b",
+    "type": "Canvas",
+    "name": "Canvas",
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "geometry": "e1a1ca39-3d31-4cfb-a2f4-9bb335a727d3",
+    "material": "f0ec83b6-37e1-463e-996b-0b0436323621",
+    "width": 1920,
+    "height": 1080,
+    "x": 0,
+    "y": 0,
+    "offsetZ": 0,
+    "isParentCanvas": true,
+    "isUIElement": true,
+    "isIUGCanvas": true
+  }
+}

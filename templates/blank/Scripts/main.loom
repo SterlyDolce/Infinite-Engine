@@ -1,0 +1,10 @@
+
+
+
+func check():
+    UI.addToScreen(UI_Test)
+
+
+Event KeyQ:
+    log("Hello again")
+    check()

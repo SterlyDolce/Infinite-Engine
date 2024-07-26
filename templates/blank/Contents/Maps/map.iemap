@@ -1,0 +1,171 @@
+{
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+
+  "object": {
+    "uuid": "2ce9a9e3-d1fa-4a99-adde-376c36ff3c6e",
+    "type": "Scene",
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "children": [
+      {
+        "uuid": "e910719b-798e-4bd9-9738-ff2e01799477",
+        "type": "Group",
+        "name": "WorldGroup",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "children": [
+          {
+            "uuid": "5351d383-faab-4a06-8b65-0f4069682873",
+            "type": "AmbientLight",
+            "name": "Fill Light",
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 11184810,
+            "intensity": 0.6
+          },
+          {
+            "uuid": "07da2e37-6fdb-40fc-8ac6-e1ae119582db",
+            "type": "PointLight",
+            "name": "Sun Light",
+            "castShadow": true,
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 14548957,
+            "intensity": 2,
+            "distance": 0,
+            "decay": 2,
+            "shadow": {
+              "mapSize": [
+                1024,
+                1024
+              ],
+              "camera": {
+                "uuid": "95ef6abe-4ca5-43c3-86b6-6a1e55003ef6",
+                "type": "PerspectiveCamera",
+                "layers": 1,
+                "up": [
+                  0,
+                  0,
+                  -1
+                ],
+                "fov": 90,
+                "zoom": 1,
+                "near": 0.5,
+                "far": 1000,
+                "focus": 10,
+                "aspect": 1,
+                "filmGauge": 35,
+                "filmOffset": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "backgroundRotation": [
+      0,
+      0,
+      0,
+      "XYZ"
+    ],
+    "environmentRotation": [
+      0,
+      0,
+      0,
+      "XYZ"
+    ]
+  }
+}
+

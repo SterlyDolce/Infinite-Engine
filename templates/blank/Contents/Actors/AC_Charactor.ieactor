@@ -1,0 +1,79 @@
+{
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [
+    {
+      "uuid": "6a977d9d-a4f7-49ef-a5a9-7aa1ce0fcaa9",
+      "type": "TorusKnotGeometry",
+      "radius": 1.5,
+      "tube": 0.5,
+      "tubularSegments": 100,
+      "radialSegments": 16,
+      "p": 2,
+      "q": 3
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "85a345ca-7b31-41dd-aadd-97a2bf693a9f",
+      "type": "MeshLambertMaterial",
+      "color": 14540253,
+      "emissive": 0,
+      "envMapRotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ],
+      "reflectivity": 1,
+      "refractionRatio": 0.98,
+      "blendColor": 0
+    }
+  ],
+  "object": {
+    "uuid": "655702ba-794b-4cec-9a93-609b8dec0631",
+    "type": "Actor",
+    "name": "Torus",
+    "castShadow": true,
+    "receiveShadow": true,
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "geometry": "6a977d9d-a4f7-49ef-a5a9-7aa1ce0fcaa9",
+    "material": "85a345ca-7b31-41dd-aadd-97a2bf693a9f",
+    "script": "a98f5ae9-f14b-4e8f-a811-9992f03373e5"
+  },
+  "name": "Torus",
+  "script": [
+    {
+      "uuid": "a98f5ae9-f14b-4e8f-a811-9992f03373e5",
+      "name": "Torus",
+      "code": "\nvar currentX = self.position.x\n\nfunc onTick():\n    set currentX = self.position.x\n    set self.position.x = currentX + 0.01\n\nEvent KeyH:\n    set self.material.colorb = Color(\"purple\")\n"
+    }
+  ],
+  "state": {}
+}

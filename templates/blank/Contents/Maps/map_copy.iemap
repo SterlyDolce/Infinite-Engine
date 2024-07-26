@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [],
+  "materials": [],
+  "textures": [],
+  "images": [],
+  "object": {
+    "uuid": "2ce9a9e3-d1fa-4a99-adde-376c36ff3c6e",
+    "type": "Scene",
+    "layers": 1,
+    "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "up": [0, 1, 0],
+    "children": [
+      {
+        "uuid": "e910719b-798e-4bd9-9738-ff2e01799477",
+        "type": "Group",
+        "name": "Map Copy",
+        "layers": 1,
+        "matrix": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        "up": [0, 1, 0],
+        "children": []
+      }
+    ],
+    "backgroundRotation": [0, 0, 0, "XYZ"],
+    "environmentRotation": [0, 0, 0, "XYZ"]
+  }
+}

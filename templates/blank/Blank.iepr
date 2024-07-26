@@ -1,0 +1,50 @@
+{
+  "project": {
+    "name": "Blank",
+    "version": "1.0.0",
+    "Engine_version": "beta",
+    "author": "Your Name",
+    "description": "A sample project for Infinite Engine.",
+    "created_at": "2024-07-16"
+  },
+  "maps": [
+    {
+        "id": "map",
+        "path": "Contents/Maps/map.iemap",
+        "uuid": "41b6427c-d062-4a73-a19d-f7c9c21e4410"
+      },
+      {
+        "id": "map",
+        "path": "Contents/Maps/map_copy.iemap",
+        "uuid": "43b6427c-d062-4a73-a19d-f7c9c21e4410"
+      }
+  ],
+  "scripts": [
+    {
+      "id": "main",
+      "path": "Scripts/main.loom",
+      "uuid": "43b6427c-d065-4a73-a19d-f7c9c21e4410"
+    }
+  ],
+  "settings": {
+    "maps": {
+      "editor_default" : "41b6427c-d062-4a73-a19d-f7c9c21e4410",
+      "game_startup" : "41b6427c-d062-4a73-a19d-f7c9c21e4410"
+    },
+    "scripts": {
+      "main" : "43b6427c-d065-4a73-a19d-f7c9c21e4410"
+    },
+    "rendering": {
+      "antialias": true,
+      "shadows": true,
+      "backgroundColor": "#000000"
+    },
+    "physics": {
+      "gravity": {
+        "x": 0,
+        "y": -9.81,
+        "z": 0
+      }
+    }
+  }
+}
