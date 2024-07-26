@@ -10,6 +10,28 @@
 
 - **Three.js Integration**: Leverage the power of Three.js for stunning 3D graphics.
 - **Loom Scripting Language**: A custom scripting language designed for efficient and easy game logic implementation.
+- ```loom
+  # Player Actor
+  
+  var scope = self
+
+  class Health:
+     var amount = 100
+     constructor():
+        set scope.health = self
+        return self
+
+     gainHealth(amount):
+        var current_amount = self.amount
+        set self.amount = current_amount + amount
+
+  var health = Health()
+
+  Event KeyQ:
+     health.gainHealth(20)
+  
+  ```
+     
 - **Infinite UI Graphics (IUG)**: An in-game UI editor for real-time interface design and customization.
 - **Cross-Platform Compatibility**: Develop once, deploy across multiple platforms.
 
@@ -26,3 +48,4 @@
    ```bash
    git clone https://github.com/SterlyDolce/Infinite-Engine.git
    cd Infinite-Engine
+   ```
