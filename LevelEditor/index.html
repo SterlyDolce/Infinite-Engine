@@ -1,0 +1,64 @@
+<body>
+        <script src="../Core/GoldenLayout/goldenlayout.min.js"></script>
+
+        <div id="menu-bar"></div>
+        <script type="module" src="../Global/menu.js"></script>
+
+
+        <div id="Toolbar" class="toolbar" >
+                <button id="saveProject" class="control-buttons" style="color: #616ca0;"><ion-icon
+                                name="save-sharp"></ion-icon></button>
+                <button id="openProject" class="control-buttons" style="color: #efb507;"><ion-icon
+                                name="folder-open"></ion-icon></button>
+                <vseparator></vseparator>
+                <button id="addActor" class="control-buttons" style="color: #83bce8;"><ion-icon
+                                name="add-circle"></ion-icon></button>
+                <button id="build" class="control-buttons"><ion-icon name="hammer"
+                                style="color: #597c98;"></ion-icon></button>
+                <button id="worldActor" class="control-buttons"><ion-icon name="game-controller"
+                                style="color: #ff9900;"></ion-icon></button>
+                <vseparator></vseparator>
+                <div class="group-control-buttons" style="width: auto; aspect-ratio: unset;">
+                        <button disabled id="PauseGame" class="control-buttons"
+                                style="border-radius: 5px 0px 0px 5px;"><ion-icon name="pause"
+                                        style="color: #6497be;"></ion-icon></button>
+                        <button id="PlayGame" class="control-buttons" style="border-radius: 0px 5px 5px 0px;"><ion-icon
+                                        name="play" style="color: #00801a;"></ion-icon></button>
+                </div>
+
+                <vseparator></vseparator>
+                <button id="moveTool" class="control-buttons"><ion-icon name="move"
+                                style="color: #4892ca;"></ion-icon></button>
+                <button id="rotateTool" class="control-buttons"><ion-icon name="sync"
+                                style="color: #0090ff;"></ion-icon></button>
+                <button id="resizeTool" class="control-buttons"><ion-icon name="resize"
+                                style="color: #83bce8;"></ion-icon></button>
+
+
+
+
+                <div id="menuContainer" style="display: flex; gap: 10px;"></div>
+
+                <span id="plingIndicator" style="display: none;">Playing</span>
+        </div>
+        <div id="layoutContainer" style="width: calc(100vw - 10px); height: calc(100vh - 125px); margin: 5px;"></div>
+
+
+
+
+        <script src="../Global/IEui.js"></script>
+
+
+
+
+        <script type="module" src="viewport.js"></script>
+        <script type="module" src="outliner.js"></script>
+        <script type="module" src="details.js"></script>
+        <script type="module" src="../Global/contentBrowser.js"></script>
+        <script src="renderer.js"></script>
+
+
+
+        <!-- <script src="../Loom.js"></script> -->
+
+</body>

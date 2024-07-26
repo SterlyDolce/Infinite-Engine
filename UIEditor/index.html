@@ -1,0 +1,33 @@
+
+<body>
+        <div id="Toolbar" class="toolbar">
+                <button id="save" class="control-buttons" style="color: #616ca0;"><ion-icon
+                                name="save-sharp"></ion-icon></button>
+                <button id="openProject" class="control-buttons" style="color: #efb507;"><ion-icon
+                                name="folder-open"></ion-icon></button>
+                <vseparator></vseparator>
+                <button id="addActor" class="control-buttons" style="color: #83bce8;"><ion-icon
+                                name="add-circle"></ion-icon></button>
+                <vseparator></vseparator>
+                <button id="script" class="control-buttons"><ion-icon name="build"
+                                style="color: #597c98;"></ion-icon></button>
+
+
+                <div id="menuContainer" style="display: flex; gap: 10px;"></div>
+
+                <span id="plingIndicator" style="display: none;">Playing</span>
+        </div>
+        <div id="layoutContainer" style="width: calc(100vw - 10px); height: calc(100vh - 125px); margin: 5px;"></div>
+
+
+
+
+        <script type="module" src="viewport.js"></script>
+        <script type="module" src="library.js"></script>
+        <script type="module" src="details.js"></script>
+        <script type="module" src="../Global/contentBrowser.js"></script>
+        <script src="renderer.js"></script>
+
+
+</body>
+

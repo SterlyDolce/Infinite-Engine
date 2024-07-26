@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Infinite Engine</title>
+        <script>
+                window.$ = require('jquery');
+        </script>
+        <script src="../Core/Engine/StateManager.js"></script>
+        <script src="../Core/Engine/ammo.wasm.js"></script>
+        <script type="importmap">
+                {
+                    "imports": {
+                        "three": "../three/build/three.module.js",
+                        "three/addons/": "../three/examples/jsm/"
+                    }
+                }
+        </script>
+        <script type="module" src="../three/loadTHREE.js"></script>
+        <link type="text/css" rel="stylesheet" href="../Core/GoldenLayout/goldenlayout-base.css" />
+        <link type="text/css" rel="stylesheet" href="../Core/GoldenLayout/goldenlayout-dark-theme.css" />
+        <link rel="stylesheet" href="../Core/GoldenLayout/ieTheme.css">
+        <link rel="stylesheet" href="../Core/GoldenLayout/style.css">
+        <script src="../Core/Engine/Console.js"></script>
+</head>
+
+<body>
+        <script src="../Core/GoldenLayout/goldenlayout.min.js"></script>
+
+        <script src="../Core/Engine/engine.js"></script>
+
+        <div id="menu-bar"></div>
+        <script type="module" src="../Global/menu.js"></script>
+        <div class="Editor" id="editor"></div>
+        <script type="module" src="../Global/contentBrowser.js"></script>
+        <script>
+                window.IERenderer = (title, type, container) => {
+                        async function get(html) {
+                                return fetch(path.join(html, 'index.html'))
+                                        .then(response => response.text())
+                                        .then(data => {
+                                                container.innerHTML = data.replace('layoutContainer', title);
+
+                                                const scripts = container.getElementsByTagName('script');
+                                                for (let i = 0; i < scripts.length; i++) {
+                                                        const script = document.createElement('script');
+                                                        script.type = scripts[i].type
+
+                                                        if (scripts[i].src) {
+                                                                const src = scripts[i].attributes.src.value
+                                                                script.src = path.join(html, src);
+                                                        } else {
+                                                                script.textContent = scripts[i].textContent;
+                                                        }
+
+                                                        document.body.appendChild(script);
+                                                }
+
+                                                return data
+
+                                        });
+                        }
+
+
+                        switch (type) {
+                                case "Map":
+                                        get('../LevelEditor')
+
+                                        break;
+                                case "UI":
+                                        get('../UIEditor')
+                                        break;
+                                default:
+                                        break;
+                        }
+
+                }
+        </script>
+
+        <script src="renderEditor.js"></script>
+
+
+        <script type="module" src="../Core/ionicons/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="../Core/ionicons/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,303 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+    overflow: hidden;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+.toolbar {
+    background-color: #222;
+    height: 50px;
+    display: flex;
+    padding: 5px 20px;
+    gap: 10px;
+    align-items: center;
+}
+
+vseparator {
+    height: 90%;
+    border-bottom: 1px #222 solid;
+    margin: 0px 5px;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+button:active {
+    opacity: .5;
+}
+
+* {
+    outline: none
+}
+
+
+
+.line-clamp {
+    display: -webkit-box;
+    word-wrap: break-word;
+    /* For legacy browsers */
+    overflow-wrap: break-word;
+    /* Modern standard */
+    white-space: normal;
+    /* Ensures text will wrap */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-line-clamp: 3;
+    /* Number of lines to show */
+    max-height: calc(1.5em * 3);
+    /* Adjust based on line height and number of lines */
+}
+
+.control-buttons, .group-control-buttons {
+    height: 35px;
+    aspect-ratio: 1;
+    border-radius: 5px;
+    border: 2px transparent solid;
+    background-color: #1c1c1c;
+    color: #fff;
+    font-size: 26px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-buttons:hover{
+    background-color: #111;
+}
+
+button:disabled {
+    filter: grayscale(1);
+    opacity: .2;
+}
+
+
+
+.outline-item:hover {
+    background-color: #ffffff10 !important;
+}
+
+
+.hoverSoft:hover {
+    background-color: #ffffff10 !important;
+}
+
+.outline-item:active {
+    opacity: 0.5;
+}
+
+
+.hoverSoft:active {
+    opacity: 0.5;
+}
+
+.selected {
+    background-color: #0090ff50 !important;
+    outline: 1px solid #0090ff50;
+}
+
+.row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+}
+
+
+
+
+/* Menu Bar Styles */
+#menu-bar {
+    display: flex;
+    align-items: center;
+    padding: 0px 5px;
+    background-color: #0e0e0e;
+}
+
+.status-message {
+    flex: 1;
+    text-align: right;
+    -webkit-app-region: drag;
+    font-size: 11px;
+    padding: 10px;
+    margin: 0px;
+    cursor: grab;
+    opacity: 0.2;
+}
+
+/* Menu Button Styles */
+.menu-bar-button {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-right: 2px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+.menu-bar-button.name {
+    font-weight: bold;
+}
+
+.menu-bar-button:hover {
+    background-color: #222;
+}
+
+/* Context Menu Styles */
+.context-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    background-color: #111;
+    border-radius: 5px;
+    border: 1px solid #333;
+    z-index: 1235678;
+}
+
+.context-menu-button {
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 2px;
+    font-size: 12px;
+    padding: 5px;
+    min-width: 200px;
+    border-radius: 5px;
+}
+
+.context-menu-button:hover {
+    background-color: #222;
+}
+
+
+
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+    padding: 0px 10px;
+}
+
+.window-button {
+    width: 12px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: white;
+    cursor: pointer;
+}
+
+.close {
+    background-color: red;
+}
+
+.minimize {
+    background-color: orange;
+}
+
+.maximize {
+    background-color: green;
+}
+
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+/*the container must be positioned relative:*/
+.custom-select {
+    position: relative;
+    font-family: Arial;
+}
+
+.custom-select select {
+    display: none;
+    /*hide original SELECT element:*/
+}
+
+.selected-image {
+    height: 40px;
+    width: 40px;
+    background-color: #000;
+    padding: 0px !important;
+    margin-right: 20px !important;
+}
+
+/*style the arrow inside the select element:*/
+.select-selected:after {
+    position: absolute;
+    content: "";
+    top: 10px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    border: 4px solid transparent;
+    border-color: #fff transparent transparent transparent;
+}
+
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+    border-color: transparent transparent #fff transparent;
+    top: 5px;
+}
+
+/*style the items (options), including the selected item:*/
+.select-items div,
+.select-selected {
+    color: #ffffff;
+    padding: 5px 20px 5px 5px;
+    border-radius: 5px;
+    margin: 2px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+}
+
+/*style items (options):*/
+.select-items {
+    position: absolute;
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin-top: 8px;
+    top: 100%;
+    right: 0;
+    z-index: 99;
+    font-size: 11px;
+    min-width: 110px;
+}
+
+/*hide the items when the select box is closed:*/
+.select-hide {
+    display: none;
+}
+
+.select-items div:hover,
+.same-as-selected {
+    background-color: #222;
+}
+
+.select-selected {
+    border-radius: 5px;
+    margin: 0;
+    padding: 1px;
+    padding-right: 20px;
+}

@@ -1,0 +1,32 @@
+{
+  "name": "infinite-engine",
+  "version": "1.0.0-beta",
+  "description": "A threejs Game Engine with a custom code language, just for fun.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SterlyDolce/Infinite-Engine.git"
+  },
+  "keywords": [
+    "THREEJS",
+    "GAME",
+    "ENGINE",
+    "LOOM",
+    "CODING",
+    "IUG"
+  ],
+  "author": "Websterly Dolce",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SterlyDolce/Infinite-Engine/issues"
+  },
+  "homepage": "https://github.com/SterlyDolce/Infinite-Engine#readme",
+  "dependencies": {
+    "electron": "^31.3.0",
+    "jquery": "^3.7.1"
+  }
+}
