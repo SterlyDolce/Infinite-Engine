@@ -296,6 +296,16 @@ function MenuClicked(e) {
         engine.addObject(sphere, engine.mainScene.children[0])
         console.log(e.target.id)
     }
+
+
+    switch (e.target.id) {
+        case 'New-Project':
+            engine.createNewProject()
+            break;
+    
+        default:
+            break;
+    }
 }
 
 

@@ -39,7 +39,7 @@ class Engine {
 
 
         if (!this.project) {
-            this.createNewProject();
+            // this.createNewProject();
         } else {
             this.openNewProject(this.project.path);
         }
@@ -182,14 +182,22 @@ class Engine {
     }
 
     async createNewProject() {
-        const resultJSON = await ipcRenderer.invoke('createNew', this.version);
-        const result = JSON.parse(resultJSON);
+        // const resultJSON = await ipcRenderer.invoke('createNew', this.version);
+        // const result = JSON.parse(resultJSON);
+        this.openNewProject('../templates/blank', true)
     }
 
-    async openNewProject(projectPath = '') {
+    async openNewProject(projectPath = '', imediate = false) {
+        
         const processDirectory = async (directoryPath) => {
+            if(imediate){
+                directoryPath = path.join(__dirname, directoryPath)
+            }
+            console.log(directoryPath)
+            document.dispatchEvent( new CustomEvent('closeWelcomePage', { detail: { } }))
             try {
                 const files = await fs.promises.readdir(directoryPath);
+                
                 for (const file of files) {
                     const filePath = path.join(directoryPath, file);
                     const type = this.determineFileType(filePath);
@@ -210,7 +218,12 @@ class Engine {
         };
 
         if (projectPath) {
-            document.addEventListener('DOMContentLoaded', () => processDirectory(projectPath));
+            if(imediate){
+                processDirectory(projectPath);
+            } else {
+                document.addEventListener('DOMContentLoaded',()=> processDirectory(projectPath))
+            }
+            
         } else {
             const defaultPath = path.join(os.homedir(), 'Documents', 'IEProjects');
             const result = await ipcRenderer.invoke('open-dir-dialog', defaultPath);

@@ -111,7 +111,7 @@ function createNestedLine(object, style, element, messageTime) {
 }
 
 
-class Console {
+class Consol {
     constructor() {
         this.element = document.createElement('div')
         this.element.style.display = 'flex'
@@ -233,6 +233,7 @@ class Console {
 
     log(...messages) {
 
+
         let style = 'color: white'; // default style
 
         if (typeof messages[0] === 'string' && messages[0].includes('%c')) {
@@ -250,11 +251,11 @@ class Console {
             messages.forEach(text => {
                 let value = text;
 
+
                 switch (typeof text) {
                     case 'object':
                         createNestedLine(value, style, this.element, this.messageTime)
                         break;
-
                     default:
                         createStyledLine(value, style, this);
                         break;
@@ -272,4 +273,5 @@ class Console {
 // const cs = window.console
 
 
-const consol = new Console()
+const consol = new Consol()
+const console = new Consol()

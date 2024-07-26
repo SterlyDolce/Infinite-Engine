@@ -57,6 +57,29 @@ button:active {
     /* Adjust based on line height and number of lines */
 }
 
+.startupContainer{
+    display: flex;
+    gap: 10px;
+}
+
+.startupButton{
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px #333 solid;
+    background-color: #222;
+    color: #fff;
+    font-size: 11px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.startupButton:hover{
+    background-color: #1c1c1c;
+    border-color: #222;
+}
+
 .control-buttons, .group-control-buttons {
     height: 35px;
     aspect-ratio: 1;

@@ -492,8 +492,9 @@ function renderDetails(container) {
 
             ImageMapInput.setMenu(Textures)
 
+            console.log(object.texture.map)
             ImageColorInput.setValue(decimalToHex(object.texture.color)).onChanged = (value) => object.texture.color = value
-            ImageMapInput.setValue(object.texture.map.source.data.currentSrc).onChanged = (value) => object.setTextureSetting(value, object.texture.color);
+            ImageMapInput.setValue(object.texture.map.source.data?.currentSrc || '../assets/default.png').onChanged = (value) => object.setTextureSetting(value, object.texture.color);
             ImageTranstarentInput.setValue(object.material.transparent).onChanged = (value) => object.material.transparent = value
 
         } else {
@@ -508,7 +509,7 @@ function renderDetails(container) {
             fontSizeInput.setValue(object.fontHeight).onChanged = (value) => object.fontHeight = value
             fontWeightSelect.setValue(object.weight).onChanged = (value) => object.weight = value
             fontVariantSelect.setValue(object.variant).onChanged = (value) => object.variant = value
-            // fontStyleSelect.setValue(object.variant).onChanged = (value) => object.variant = value
+            // fontStyleSelect.setValue(object.font).onChanged = (value) => object.font = value
             fontStyleSelect.show(false)
         } else {
             TeXt.show(false)

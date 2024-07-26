@@ -21,7 +21,7 @@ function createWindow(html) {
         frame: false
     });
     mainWindow.loadFile(html);
-    mainWindow.webContents.openDevTools(); // Optional: Open DevTools
+    // mainWindow.webContents.openDevTools();
 
 
     return mainWindow;

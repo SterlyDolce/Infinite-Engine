@@ -133,7 +133,7 @@ function renderViewport(container) {
         rendererEdit.setSize(width, height);
         rendererEdit.setAnimationLoop(animateEdit);
         canvasContainer.append(rendererEdit.domElement);
-        consol.addTo(container.element)
+        console.addTo(container.element)
 
         // Setup player renderer
         rendererPlay = new THREE.WebGLRenderer({ antialias: true });

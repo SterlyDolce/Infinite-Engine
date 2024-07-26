@@ -28,7 +28,7 @@ function renderLevelEditor(filepath, id){
             {
                 type: "column",
                 content: [{
-                    id: 'Outliner',
+                    title: 'Outliner',
                     type: 'component',
                     componentName: 'IE-Panel',
                     height: 40,
@@ -50,6 +50,7 @@ function renderLevelEditor(filepath, id){
     
     if (savedState !== null) {
         myLayout = new GoldenLayout(JSON.parse(savedState), document.getElementById(id));
+
     } else {
         myLayout = new GoldenLayout(config, document.getElementById(id));
     }

@@ -33,6 +33,10 @@
 
         <div id="menu-bar"></div>
         <script type="module" src="../Global/menu.js"></script>
+
+        <div id="welcomeScreen"></div>
+
+
         <div class="Editor" id="editor"></div>
         <script type="module" src="../Global/contentBrowser.js"></script>
         <script>
@@ -78,6 +82,55 @@
 
                 }
         </script>
+
+
+
+
+        <template>
+                <div class="container"
+                        style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; ">
+                        <img src="../assets/Infinite Icon.png" alt="Infinite" height="200"
+                                style="margin-top: 100px; filter: invert(1); opacity: 0.3;">
+                        <!-- <h1>Infinite Engine</h1>
+                        <p style="font-size: 11px; margin: 10px 0px 50px 0px; padding: 0px;">An Endless loop with loom.
+                        </p> -->
+                        <div class="startupContainer" style="margin: 50px; margin-top: 100px;">
+                                <button class="startupButton" style="background-color: #0090ff;"
+                                        onclick="engine.createNewProject()">
+                                        Create New
+                                </button>
+                                <button class="startupButton">
+                                        Open Project
+                                </button>
+                                <button class="startupButton">
+                                        Clone From IEStore
+                                </button>
+                                <button class="startupButton">
+                                        Open IEStore
+                                </button>
+                        </div>
+                </div>
+        </template>
+        <script>
+                function showContent() {
+                        let temp = document.getElementsByTagName("template")[0];
+                        let w = document.getElementById("welcomeScreen");
+                        let ws = document.createElement('div')
+                        w.appendChild(ws)
+                        let clon = temp.content.cloneNode(true);
+                        ws.appendChild(clon);
+                        document.addEventListener('closeWelcomePage', () => {
+                                if (w.firstChild) {
+                                        w.removeChild(w.firstChild);
+                                }
+                        });
+                }
+
+
+                engine.project ? null : showContent()
+
+        </script>
+
 
         <script src="renderEditor.js"></script>
 
