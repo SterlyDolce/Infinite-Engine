@@ -49,3 +49,12 @@
    git clone https://github.com/SterlyDolce/Infinite-Engine.git
    cd Infinite-Engine
    ```
+2. Install Dependencies:
+   ```bash
+   npm install electron
+   ```
+3. Launch Infinite Engine:
+   ```bash
+   npm start
+   ```
+   
