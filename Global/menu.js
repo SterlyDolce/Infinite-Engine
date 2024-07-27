@@ -1,22 +1,24 @@
-import { addPointLight, CustomShortcut } from "../Core/Engine/command.js";
-// import { scene as project } from "./Viewport.js";
+import * as COMMAND from "../Core/Engine/command.js";
+import * as THREE from "../three/build/three.module.js";
+
+let shortcuts = new COMMAND.CustomShortcut();
 
 const data = {
     name: 'Infinite Engine'
 }
 
-
 class Menu {
     constructor(menuId) {
         this.menu = document.getElementById(menuId);
+        this.version = this.createVersionElement();
+    }
+
+    createVersionElement() {
         const version = document.createElement("p");
         version.className = "status-message";
         version.style.marginLeft = "auto";
         version.innerText = 'Beta';
-
-        this.version = version
-
-
+        return version;
     }
 
     showVersion() {
@@ -26,29 +28,22 @@ class Menu {
     showWindowControlButtons() {
         const controlsContainer = document.createElement('div');
         controlsContainer.className = 'window-controls';
-        this.menu.insertBefore(controlsContainer, null);
-    
-        const closeButton = document.createElement('div');
-        closeButton.className = 'window-button close';
-        closeButton.addEventListener('click', () => {
-            ipcRenderer.send('window-control', 'close');
+
+        ['close', 'minimize', 'maximize'].forEach(action => {
+            const button = this.createControlButton(action);
+            controlsContainer.appendChild(button);
         });
-    
-        const minimizeButton = document.createElement('div');
-        minimizeButton.className = 'window-button minimize';
-        minimizeButton.addEventListener('click', () => {
-            ipcRenderer.send('window-control', 'minimize');
+
+        this.menu.appendChild(controlsContainer);
+    }
+
+    createControlButton(action) {
+        const button = document.createElement('div');
+        button.className = `window-button ${action}`;
+        button.addEventListener('click', () => {
+            ipcRenderer.send('window-control', action);
         });
-    
-        const maximizeButton = document.createElement('div');
-        maximizeButton.className = 'window-button maximize';
-        maximizeButton.addEventListener('click', () => {
-            ipcRenderer.send('window-control', 'maximize');
-        });
-    
-        controlsContainer.appendChild(closeButton);
-        controlsContainer.appendChild(minimizeButton);
-        controlsContainer.appendChild(maximizeButton);
+        return button;
     }
 
     addMenuItem(label, contextMenuContent) {
@@ -56,16 +51,13 @@ class Menu {
         button.className = 'menu-bar-button';
         button.textContent = label;
 
-        // Create a context menu
         const contextMenu = this.createContextMenu(contextMenuContent);
-
         button.addEventListener('click', (event) => {
             this.openContextMenu(event, contextMenu);
         });
 
         this.menu.appendChild(button);
-
-        return contextMenu.children
+        return contextMenu.children;
     }
 
     addComplexMenuItem(parent, label, contextMenuContent) {
@@ -73,14 +65,12 @@ class Menu {
         button.className = 'context-menu-button';
         button.textContent = label;
 
-        // Create a context menu
         const contextMenu = this.createContextMenu(contextMenuContent);
-
         button.addEventListener('mouseover', (event) => {
             this.openChildContextMenu(event, contextMenu, parent, button);
         });
 
-        parent.appendChild(button); // Use 'parent' to specify where to add the menu item
+        parent.appendChild(button);
     }
 
     addTitleMenuItem(label) {
@@ -101,41 +91,44 @@ class Menu {
                 const separator = document.createElement('vseparator');
                 contextMenu.appendChild(separator);
             } else if (content.includes("?<")) {
-                const menu = document.createElement('button');
-                menu.disabled = true
-                menu.className = 'context-menu-button';
-                menu.innerHTML = content.replace("?<", "");
+                const menu = this.createDisabledMenuButton(content.replace("?<", ""));
                 contextMenu.appendChild(menu);
-            }
-            else {
-                const menu = document.createElement('button');
-                menu.className = 'context-menu-button';
-                menu.id = content.replace(" ", "-")
-                menu.innerHTML = content;
-
-                menu.onpointerdown = (e) => {
-                    MenuClicked(e)
-                }
+            } else {
+                const menu = this.createMenuButton(content);
                 contextMenu.appendChild(menu);
             }
         });
+
         return contextMenu;
+    }
+
+    createDisabledMenuButton(content) {
+        const menu = document.createElement('button');
+        menu.disabled = true;
+        menu.className = 'context-menu-button';
+        menu.innerHTML = content;
+        return menu;
+    }
+
+    createMenuButton(content) {
+        const menu = document.createElement('button');
+        menu.className = 'context-menu-button';
+        menu.id = content.replace(" ", "-");
+        menu.innerHTML = content;
+        menu.addEventListener('pointerdown', (e) => {
+            MenuClicked(e);
+        });
+        return menu;
     }
 
     openChildContextMenu(event, contextMenu, parent, button) {
         contextMenu.style.position = 'absolute';
-        contextMenu.style.top = event.target.offsetTop + event.target.offsetHeight + 'px';
-        contextMenu.style.left = parent.offsetLeft + parent.offsetWidth - 20 + 'px';
+        contextMenu.style.top = `${parent.offsetTop + event.target.offsetTop}px`;
+        contextMenu.style.left = `${parent.offsetLeft + parent.offsetWidth - 20}px`;
 
         let mouseInside = false;
-
-        contextMenu.addEventListener('mouseenter', () => {
-            mouseInside = true;
-        });
-
-        contextMenu.addEventListener('mouseleave', () => {
-            mouseInside = false;
-        });
+        contextMenu.addEventListener('mouseenter', () => { mouseInside = true; });
+        contextMenu.addEventListener('mouseleave', () => { mouseInside = false; });
 
         document.addEventListener('mousemove', (ev) => {
             if (ev.target !== button && ev.target !== contextMenu && !mouseInside) {
@@ -146,38 +139,31 @@ class Menu {
         document.body.appendChild(contextMenu);
     }
 
-
     openContextMenu(event, contextMenu) {
         contextMenu.style.position = 'absolute';
-        contextMenu.style.top = event.target.offsetTop + event.target.offsetHeight + 'px';
-        contextMenu.style.left = event.target.offsetLeft + 'px';
+        contextMenu.style.top = `${event.target.offsetTop + event.target.offsetHeight}px`;
+        contextMenu.style.left = `${event.target.offsetLeft}px`;
 
-        document.addEventListener('click', (e) => {
+        const closeContextMenu = (e) => {
             if (e.target !== event.target) {
                 contextMenu.remove();
-                document.removeEventListener('click', this.closeContextMenu);
+                document.removeEventListener('click', closeContextMenu);
             }
-        });
+        };
 
+        document.addEventListener('click', closeContextMenu);
         document.body.appendChild(contextMenu);
     }
 }
 
 const menuBar = new Menu('menu-bar');
-
 menuBar.addTitleMenuItem(data.name);
 
 // Example context menu content for the "File" menu item
 const fileContextMenuContent = [
     'New Project',
-    ['New Map', [
-        'Blank Scene',
-        'Basic Scene',
-    ]],
-    ['New File', [
-        'New Script',
-        'New Component',
-    ]],
+    ['New Map', ['Blank Scene', 'Basic Scene']],
+    ['New File', ['New Script', 'New Component']],
     '?/',
     'Open File',
     'Open Project',
@@ -195,36 +181,18 @@ const editContextMenuContent = [
     '?/',
     'Cut',
     'Copy',
-    'Past',
+    'Paste',
     '?/',
     ['Add', [
         'Empty',
-        ['Object', [
-            'Cube',
-            'Capsule',
-            'Circle',
-            'Cylinder',
-            'Ring',
-            'Torus',
-            'Sprite',
-            'Text'
-        ]],
-        ['Lights', [
-            'Spot Light',
-            'Point Light',
-            'Directional Light',
-            'Ambient Light',
-            'Hemisphere Light'
-        ]],
-        ['Cameras', [
-            'Orthographic Camera',
-            'Perspective Camera'
-        ]]
+        ['Object', ['Cube', 'Capsule', 'Circle', 'Cylinder', 'Ring', 'Torus', 'Sprite', 'Text']],
+        ['Lights', ['Spot Light', 'Point Light', 'Directional Light', 'Ambient Light', 'Hemisphere Light']],
+        ['Cameras', ['Orthographic Camera', 'Perspective Camera']]
     ]],
 ];
 
 const combinedRunDebugMenuContent = [
-    'Start Debuging',
+    'Start Debugging',
     'Run Game',
     'Stop ?<',
     '?/',
@@ -257,65 +225,216 @@ const helpContextMenuContent = [
     `About ${data.name}`,
 ];
 
-
-
-const fileMenu = menuBar.addMenuItem('File', fileContextMenuContent);
-const editMenu = menuBar.addMenuItem('Edit', editContextMenuContent);
-const runMenu = menuBar.addMenuItem('Run', combinedRunDebugMenuContent);
+menuBar.addMenuItem('File', fileContextMenuContent);
+menuBar.addMenuItem('Edit', editContextMenuContent);
+menuBar.addMenuItem('Run', combinedRunDebugMenuContent);
 menuBar.addMenuItem('View', viewContextMenuContent);
 menuBar.addMenuItem('Window', windowContextMenuContent);
 menuBar.addMenuItem('Terminal', terminalContextMenuContent);
 menuBar.addMenuItem('Help', helpContextMenuContent);
-menuBar.showVersion()
-menuBar.showWindowControlButtons()
 
+menuBar.showVersion();
+menuBar.showWindowControlButtons();
 
-
-
-
+const _DefaultMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee });
 
 function MenuClicked(e) {
-    console.log()
-
-    if (e.target.id == 'Cube') {
-        const map = new THREE.TextureLoader().load('../light.png');
-        // const material = new THREE.SpriteMaterial({ map: map });
-
-        // const sprite = new THREE.Sprite(material);
-
-        // console.log(engine)
-        // console.log(sprite)
-
-
-        const geometry = new THREE.SphereGeometry(15, 32, 16);
-        const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-        const sphere = new THREE.Mesh(geometry, material)
-        sphere.name = "sphere"
-
-
-        engine.addObject(sphere, engine.mainScene.children[0])
-        console.log(e.target.id)
-    }
-
-
     switch (e.target.id) {
+        // File
         case 'New-Project':
-            engine.createNewProject()
+            engine.createNewProject();
             break;
-    
+        case 'Open-File':
+            engine.openFile();
+            break;
+        case 'Save':
+            engine.saveCurrentFile();
+            break;
+        case 'Export-Selection':
+            engine.exportSelection();
+            break;
+        case 'Import':
+            engine.importFile();
+            break;
+        case 'Exit':
+            engine.exitApplication();
+            break;
+
+        // Edit
+        case 'Undo':
+            engine.stateManager.undo();
+            break;
+        case 'Redo':
+            engine.stateManager.redo();
+            break;
+        case 'Cut':
+            engine.cut();
+            break;
+        case 'Copy':
+            engine.copy();
+            break;
+        case 'Paste':
+            engine.paste();
+            break;
+
+        // Add
+        case 'Cube':
+            if (engine.activeScene) {
+                engine.addObject(new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), _DefaultMaterial), engine.activeScene.children[0]);
+            }
+            break;
+        case 'Sphere':
+            if (engine.activeScene) {
+                engine.addObject(new THREE.Mesh(new THREE.SphereGeometry(1, 32, 16), _DefaultMaterial), engine.activeScene.children[0]);
+            }
+            break;
+
+        // Run/Debug
+        case 'Start-Debugging':
+            engine.startDebugging();
+            break;
+        case 'Run-Game':
+            engine.runGame();
+            break;
+        case 'Stop-Debugging':
+            engine.stopDebugging();
+            break;
+        case 'Toggle-Breakpoint':
+            engine.toggleBreakpoint();
+            break;
+        case 'Inspect-Variables':
+            engine.inspectVariables();
+            break;
+        case 'Console':
+            engine.showConsole();
+            break;
+
+        // View
+        case 'Toggle-Full-Screen':
+            engine.toggleFullScreen();
+            break;
+        case 'Show-Grid':
+            engine.showGrid();
+            break;
+        case 'Hide-UI':
+            engine.hideUI();
+            break;
+
+        // Window
+        case 'Minimize':
+            ipcRenderer.send('window-control', 'minimize');
+            break;
+        case 'Maximize':
+            ipcRenderer.send('window-control', 'maximize');
+            break;
+        case 'Close':
+            ipcRenderer.send('window-control', 'close');
+            break;
+
+        // Terminal
+        case 'New-Terminal':
+            engine.createNewTerminal();
+            break;
+        case 'Close-Terminal':
+            engine.closeTerminal();
+            break;
+
+        // Help
+        case 'Documentation':
+            window.open('https://your-documentation-url.com', '_blank');
+            break;
+        case 'Community-Forum':
+            window.open('https://your-community-forum-url.com', '_blank');
+            break;
+        case 'About':
+            alert(`About ${data.name}`);
+            break;
+
         default:
+            console.log(`No action defined for ${e.target.id}`);
             break;
     }
 }
 
 
 
-let shortcuts = new CustomShortcut();
-
 
 shortcuts.addShortcut('Ctrl+ ', () => {
-    engine.toggleContentBrowser()
+    engine.toggleContentBrowser();
 });
 
+shortcuts.addShortcut('Ctrl+n', () => {
+    engine.createNewProject();
+});
 
+shortcuts.addShortcut('Ctrl+o', () => {
+    engine.openFile();
+});
 
+shortcuts.addShortcut('Ctrl+s', () => {
+    engine.saveCurrentFile();
+});
+
+shortcuts.addShortcut('Ctrl+e', () => {
+    engine.exportSelection();
+});
+
+shortcuts.addShortcut('Ctrl+i', () => {
+    engine.importFile();
+});
+
+shortcuts.addShortcut('Ctrl+q', () => {
+    engine.exitApplication();
+});
+
+shortcuts.addShortcut('Ctrl+z', () => {
+    engine.undo();
+});
+
+shortcuts.addShortcut('Ctrl+Shift+z', () => {
+    engine.redo();
+});
+
+shortcuts.addShortcut('Ctrl+x', () => {
+    engine.cut();
+});
+
+shortcuts.addShortcut('Ctrl+c', () => {
+    engine.copy();
+});
+
+shortcuts.addShortcut('Ctrl+v', () => {
+    engine.paste();
+});
+
+shortcuts.addShortcut('F5', () => {
+    engine.runGame();
+});
+
+shortcuts.addShortcut('F9', () => {
+    engine.toggleBreakpoint();
+});
+
+shortcuts.addShortcut('F10', () => {
+    engine.startDebugging();
+});
+
+shortcuts.addShortcut('F11', () => {
+    engine.stopDebugging();
+});
+
+shortcuts.addShortcut('F12', () => {
+    engine.showConsole();
+});
+
+shortcuts.addShortcut('Alt+Enter', () => {
+    engine.toggleFullScreen();
+});
+
+shortcuts.addShortcut('Ctrl+g', () => {
+    engine.showGrid();
+});
+
+shortcuts.addShortcut('Ctrl+Shift+u', () => {
+    engine.hideUI();
+});

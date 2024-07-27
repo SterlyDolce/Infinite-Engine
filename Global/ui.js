@@ -5,6 +5,10 @@ class UI {
         this.IEui = true;
         this.element = document.createElement('div');
 
+        this.element.addEventListener('mousedown', (e)=>{
+            e.stopPropagation()
+        })
+
         this.element.onclick = (e) => {
             this.onClick(e)
         }
@@ -1184,17 +1188,17 @@ class GridContent extends UI {
                 })
                 this.selectObjects = [object]
                 const selectedItem = this.element.querySelector(`[data-id="${object[this.difference]}"]`)
-                selectedItem.classList.add('selected')
+                if (selectedItem) selectedItem.classList.add('selected')
             } else {
                 if (this.selectObjects.includes(object)) {
                     this.selectObjects = this.selectObjects.filter(item => item !== object)
                     const selectedItem = this.element.querySelector(`[data-id="${object[this.difference]}"]`)
-                    selectedItem.classList.remove('selected')
-                } else {
+                    if (selectedItem) selectedItem.classList.add('selected')
+                    } else {
                     this.selectObjects.push(object)
                     const selectedItem = this.element.querySelector(`[data-id="${object[this.difference]}"]`)
-                    selectedItem.classList.add('selected')
-                }
+                    if (selectedItem) selectedItem.classList.add('selected')
+                    }
             }
         }
 
@@ -1302,13 +1306,13 @@ class GridContent extends UI {
                         localStorage.setItem(element.name, JSON.stringify(iconPrev))
                         previewRender.style.borderColor = iconPrev[1]
                         previewRender.innerHTML = ''
-                        previewRender.style.backgroundImage = `url(${iconPrev[0]}`
+                        previewRender.style.backgroundImage = `url(${iconPrev[0].replace(/\\/g, '/')}`
                         previewRender.style.backgroundSize = '100% 100%'
                     } else {
                         const iconPrev = JSON.parse(existingIcon)
                         previewRender.style.borderColor = iconPrev[1]
                         previewRender.innerHTML = ''
-                        previewRender.style.backgroundImage = `url(${iconPrev[0]}`
+                        previewRender.style.backgroundImage = `url(${iconPrev[0].replace(/\\/g, '/')}`
                     }
                 } else {
                     const iconName = this.icons[element[this.iconDiference]]

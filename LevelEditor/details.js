@@ -340,7 +340,7 @@ function renderDetails(container) {
 
 
 
-    const meshInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden' })
+    const meshInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden',  margin: '5px' })
     const mesh = new MultiInputs({ title: "Mesh", children: [meshInput] })
 
     const meshes = new Panel({ title: "Meshes", children: [mesh] })
@@ -351,7 +351,7 @@ function renderDetails(container) {
             gap: '5px'
         })
 
-    const materialInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden' })
+    const materialInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden', margin: '5px' })
     const material = new MultiInputs({ title: "Material", children: [materialInput] })
 
     const materials = new Panel({ title: "Materials", children: [material] })

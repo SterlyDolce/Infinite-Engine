@@ -274,4 +274,4 @@ class Consol {
 
 
 const consol = new Consol()
-const console = new Consol()
+// const console = new Consol()

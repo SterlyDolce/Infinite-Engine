@@ -133,7 +133,6 @@ function renderContentBrowser(container) {
                 const name = engine.replaceSpacesWithCapital(content.name)
                 const object = engine.environment.get(name)
 
-                console.log(object)
                 const img = object.filePath
 
                 return [img, "#E55137"]
@@ -415,7 +414,7 @@ function renderContentBrowser(container) {
         let items = engine.scanDir(contents.path);
 
         let relativePath = engine.requestRelativePath(dir.path, contents.path);
-        let breadcrumbs = relativePath.split('/').map(name => ({ name, path: contents.path }));
+        let breadcrumbs = relativePath.split(path.sep).map(name => ({ name, path: contents.path }));
         breadcrumb.update(breadcrumbs);
 
         let selected = [];
@@ -569,7 +568,7 @@ function renderContentBrowser(container) {
 
             relativePath = engine.requestRelativePath(dir.path, currentPath);
 
-            breadcrumbs = relativePath.split('/').map(name => ({ name, path: currentPath }));
+            breadcrumbs = relativePath.split(path.sep).map(name => ({ name, path: currentPath }));
             breadcrumb.update(breadcrumbs);
 
             items = engine.scanDir(currentPath);

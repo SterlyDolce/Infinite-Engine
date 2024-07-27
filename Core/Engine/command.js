@@ -55,31 +55,6 @@ export class undoShortcut {
 }
 
 
-export const addPointLight = function(helperScene, projectScene){
-
-    let object, helper;
-    const newCommand = new Command(()=>{
-        const pointLight = new THREE.PointLight( 0x0090ff, 5, 100 );
-        pointLight.position.set( 0, 10, 0 );
-        projectScene.add( pointLight );
-        object = pointLight
-        
-        const sphereSize = 1;
-        const pointLightHelper = new THREE.PointLightHelper( pointLight, sphereSize );
-        helperScene.add( pointLightHelper );
-
-        helper = pointLightHelper
-    },()=>{
-        projectScene.remove(object)
-        helperScene.remove(helper)
-    })
-
-    newCommand.execute()
-}
-
-
-
-
 export class CustomShortcut {
     constructor() {
         this.shortcuts = {};
@@ -125,18 +100,25 @@ export class CustomShortcut {
     }
 }
 
+
+export const addObject = function(parent, object, position = new THREE.Vector3()){
+
+    const newCommand = new Command(()=>{
+        object.position.copy(position)
+        parent.add(object)
+        engine.selectNewObject(object)
+    },()=>{
+        object.parent.remove(object)
+    })
+
+    newCommand.execute()
+}
+
+
+
+
+
 // Example usage
-let settings = { /* settings object */ };
 let myShortcuts = new CustomShortcut();
 
 
-myShortcuts.addShortcut('Meta+s', () => {
-    console.log('Save shortcut triggered!');
-});
-
-myShortcuts.addShortcut('Ctrl+z', () => {
-    console.log('Undo shortcut triggered!');
-});
-
-// Additional example: removing a shortcut
-// myShortcuts.removeShortcut('Ctrl+s');

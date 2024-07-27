@@ -22,6 +22,7 @@ class Engine {
         this.focus = null;
         this.IEui = null
         this.IUG = null
+        this.activeScene = null
         this.stateManager = new StateManager();
         this.deselectObject = () => { };
         this.selectNewObject = () => { };

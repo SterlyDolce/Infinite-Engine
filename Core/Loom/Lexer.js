@@ -111,6 +111,7 @@ class Lexer {
         this.input = input;
         this.position = 0;
         this.line = 0;
+        this.row = 0;
         this.indentStack = [0]; // Track current indentation levels
         this.tokens = [];
         this.indentID = 0;
@@ -119,12 +120,19 @@ class Lexer {
     lex() {
         while (this.position < this.input.length) {
             let char = this.input[this.position];
-
-            if (char === ' ') {
+            this.row++
+            if (char === '') {
+                this.position++;
+            }
+            else if (char === ' ') {
                 this.consumeWhitespace();
             } else if (char === '\n') {
                 this.line++;
+                this.row = 0
                 this.position++;
+                this.handleIndentation();
+            
+            } else if(char === '    '){
                 this.handleIndentation();
             } else if (char === ':') {
                 this.tokens.push(createToken(tokenType.Colon, char));
@@ -181,6 +189,8 @@ class Lexer {
                 this.position++;
             } else if (char === '#') {
                 this.consumeComment("\n");
+            } else if (char === '\\') {
+                this.consumeComment("\\");
             } else if (char === '"' || char === "'") {
                 const stringChar = char;
                 let string = this.consumeString(stringChar);
@@ -195,7 +205,8 @@ class Lexer {
                 let type = tokenType.Number;
                 this.tokens.push(createToken(type, Number(number)));
             } else {
-                throw new Error(`Unexpected character: '${char}'`);
+                this.position++
+                // throw new Error(`Unexpected character: '${char}' at ${this.line}:${this.row}`);
             }
         }
 

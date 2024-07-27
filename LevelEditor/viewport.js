@@ -105,6 +105,7 @@ function renderViewport(container) {
         setupUIHelpers();
         setupWorld();
         setupOutlinePass();
+        rendererEdit.setAnimationLoop(animateEdit);
     }
 
     async function setPhysic() {
@@ -131,9 +132,11 @@ function renderViewport(container) {
         rendererEdit.setPixelRatio(window.devicePixelRatio);
         rendererEdit.shadowMap.enabled = true;
         rendererEdit.setSize(width, height);
-        rendererEdit.setAnimationLoop(animateEdit);
         canvasContainer.append(rendererEdit.domElement);
-        console.addTo(container.element)
+        consol.addTo(container.element)
+        rendererEdit.domElement.onclick = ()=>{
+            engine.activeScene = mainScene
+        }
 
         // Setup player renderer
         rendererPlay = new THREE.WebGLRenderer({ antialias: true });
@@ -350,6 +353,7 @@ function renderViewport(container) {
         const reverseState = () => {
             const clonedObject = currentState.object.clone(); // Clone the captured object state
             const currentParent = currentState.parent;
+            deselectObject(object)
             currentParent.remove(object);
         };
 
@@ -976,14 +980,14 @@ func onOverlap(obj):
         const width = container.element.clientWidth;
         const height = container.element.clientHeight;
 
-        if(width == 0 || height == 0){
+        if (width == 0 || height == 0) {
             return
         }
 
 
         if (isOnFocus) {
             // console.log(selectedObjects[0])
-            if (!selectedObjects[0]) {
+            if (!selectedObjects[0]  && control) {
                 control.detach();
                 mainScene.remove(control);
             }
@@ -992,44 +996,46 @@ func onOverlap(obj):
 
 
 
-            
+
             const aspect = width / height
 
             //
-            UICamera.left = width / -2;
-            UICamera.right = width / 2;
-            UICamera.top = height / 2;
-            UICamera.bottom = height / -2;
-            UICamera.updateProjectionMatrix();
+                UICamera.left = width / -2;
+                UICamera.right = width / 2;
+                UICamera.top = height / 2;
+                UICamera.bottom = height / -2;
+                UICamera.updateProjectionMatrix();
             //
 
-            perspectiveCamera.zoom = zoom
-            perspectiveCamera.aspect = width / height;
-            perspectiveCamera.updateProjectionMatrix();
+                perspectiveCamera.zoom = zoom
+                perspectiveCamera.aspect = width / height;
+                perspectiveCamera.updateProjectionMatrix();
+    
+                camera.position.copy(perspectiveCamera.position);
+                camera.rotation.copy(perspectiveCamera.rotation);
+                camera.scale.copy(perspectiveCamera.scale);
+                camera.zoom = perspectiveCamera.zoom;
+    
+                //
+                orthographicCamera.left = -10 * aspect / 2
+                orthographicCamera.right = 10 * aspect / 2;
+                orthographicCamera.top = 10 / 2;
+                orthographicCamera.bottom = -10 / 2;
+                orthographicCamera.updateProjectionMatrix();
+                //
 
-            camera.position.copy(perspectiveCamera.position);
-            camera.rotation.copy(perspectiveCamera.rotation);
-            camera.scale.copy(perspectiveCamera.scale);
-            camera.zoom = perspectiveCamera.zoom;
+                if(playerCamera){
+                    playerCamera.position.copy(perspectiveCamera.position);
+                    playerCamera.rotation.copy(perspectiveCamera.rotation);
+                    playerCamera.scale.copy(perspectiveCamera.scale);
+                    playerCamera.aspect = width / height;
+                    playerCamera.updateProjectionMatrix();
+                //
+            }
 
-            //
-            orthographicCamera.left = -10 * aspect / 2
-            orthographicCamera.right = 10 * aspect / 2;
-            orthographicCamera.top = 10 / 2;
-            orthographicCamera.bottom = -10 / 2;
-            orthographicCamera.updateProjectionMatrix();
-            //
-
-            playerCamera.position.copy(perspectiveCamera.position);
-            playerCamera.rotation.copy(perspectiveCamera.rotation);
-            playerCamera.scale.copy(perspectiveCamera.scale);
-            playerCamera.aspect = width / height;
-            playerCamera.updateProjectionMatrix();
-
-            //
-
-            rendererEdit.setSize(width, height);
-            rendererPlay.setSize(width, height);
+                rendererEdit.setSize(width, height);
+                rendererPlay.setSize(width, height);
+            
 
             composer.setSize(width, height);
             effectFXAA.uniforms['resolution'].value.set(1 / width, 1 / height);
@@ -1054,7 +1060,7 @@ func onOverlap(obj):
         const width = container.element.clientWidth;
         const height = container.element.clientHeight;
 
-        if(width == 0 || height == 0){
+        if (width == 0 || height == 0) {
             return
         }
 
@@ -1246,13 +1252,13 @@ func onOverlap(obj):
         const button = new UI().style({
             color: '#fff'
         })
-        
+
         button.element.innerText = "Content Browser"
         const checkbox = new Checkbox('c-br', true).show(false)
         const label = new Label({ forElement: checkbox, children: [button] })
-        label.element.className = `lm_tab ${checkbox.getValue()? 'lm_active' : ''}`
+        label.element.className = `lm_tab ${checkbox.getValue() ? 'lm_active' : ''}`
 
-        
+
 
         const tabs = new UI()
         tabs.element.className = 'lm_tabs'
@@ -1262,7 +1268,7 @@ func onOverlap(obj):
         header.element.className = 'lm_header'
         tabs.addToDom(header.element)
 
-        const content = new UI().style({height: '300px'})
+        const content = new UI().style({ height: '300px' })
         content.element.className = 'lm_content'
         content.show(checkbox.getValue())
 
@@ -1275,10 +1281,10 @@ func onOverlap(obj):
         floatcontainer.addToDom(container.element)
 
 
-        checkbox.onChanged = (value)=>{
-            value 
-            ?label.element.classList.add('lm_active')
-            :label.element.classList.remove('lm_active')
+        checkbox.onChanged = (value) => {
+            value
+                ? label.element.classList.add('lm_active')
+                : label.element.classList.remove('lm_active')
 
             content.show(value)
         }
@@ -1294,16 +1300,15 @@ func onOverlap(obj):
 
     const isfBC = localStorage.getItem('floatingBC')
 
-    if(isfBC){
+    if (isfBC) {
         onFloatContentBrowser()
     }
 
     onFloatContentBrowser()
 
-    
 
-    
-    
+
+
 
 
     return mainScene
@@ -1312,4 +1317,4 @@ func onOverlap(obj):
 
 window.renderViewport = renderViewport;
 
-document.dispatchEvent(new CustomEvent('panelReady', {detail: {panel: renderViewport, title: 'Viewport'}}))
+document.dispatchEvent(new CustomEvent('panelReady', { detail: { panel: renderViewport, title: 'Viewport' } }))

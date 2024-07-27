@@ -406,13 +406,13 @@ function renderDetails(container) {
         for (const name in engine.environment.store) {
             const object = engine.environment.get(name)
             if (object instanceof THREE.Texture) {
-                object.value = object.filePath
+                object.value = object.filePath.replace(/\\/g, '/')
                 Textures.push(object)
             } else if (object instanceof THREE.Actor) {
-                object.value = object.filePath
+                object.value = object.filePath.replace(/\\/g, '/')
                 Actors.push(object)
             } else if (object instanceof THREE.Mesh) {
-                object.value = object.filePath
+                object.value = object.filePath.replace(/\\/g, '/')
                 Meshes.push(object)
             }
         }
