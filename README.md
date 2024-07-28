@@ -8,9 +8,9 @@
 
 ## Screenshots
 - **Level Editor**
-  ([Level Editor]([Screen Shot 2024-07-28 at 2.32.43 AM.png](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Screen%20Shot%202024-07-28%20at%202.33.20%20AM.png))
+  ![Level Editor](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Screen%20Shot%202024-07-28%20at%202.33.20%20AM.png)
 - **IUG Editor**
-  [IUG Editor]([Screen Shot 2024-07-28 at 2.32.43 AM.png](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Screen%20Shot%202024-07-28%20at%202.37.41%20AM.png))
+  ![IUG Editor](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Screen%20Shot%202024-07-28%20at%202.37.41%20AM.png)
 
 **More Editors are in progress**
 ## Features
