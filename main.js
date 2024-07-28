@@ -1,5 +1,6 @@
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
+const os = require('os')
 
 
 const mainPath = path.join(__dirname, 'MainEditor', 'index.html');
@@ -139,17 +140,40 @@ ipcMain.on('window-control', (event, arg) => {
     }
 });
 
-// Add an IPC listener to handle file dialogs
+ipcMain.handle('save-dir-dialog', async () => {
+    try {
+        const result = await dialog.showSaveDialog({
+            properties: ['createDirectory'],
+            defaultPath: path.join(os.homedir(), 'Documents', 'IEProjects')
+        });
+        return result;
+    } catch (error) {
+        console.error('Error opening save directory dialog:', error);
+        throw error; // Re-throw to propagate the error
+    }
+});
+
 ipcMain.handle('open-dir-dialog', async () => {
-    const result = await dialog.showOpenDialog({
-        properties: ['openDirectory']
-    });
-    return result;
+    try {
+        const result = await dialog.showOpenDialog({
+            properties: ['openDirectory'],
+            defaultPath: path.join(os.homedir(), 'Documents', 'IEProjects')
+        });
+        return result;
+    } catch (error) {
+        console.error('Error opening directory dialog:', error);
+        throw error;
+    }
 });
 
 ipcMain.handle('open-file-dialog', async () => {
-    const result = await dialog.showOpenDialog({
-        properties: ['openFile']
-    });
-    return result;
+    try {
+        const result = await dialog.showOpenDialog({
+            properties: ['openFile']
+        });
+        return result;
+    } catch (error) {
+        console.error('Error opening file dialog:', error);
+        throw error;
+    }
 });

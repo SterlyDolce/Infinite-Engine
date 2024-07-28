@@ -133,9 +133,11 @@ function renderContentBrowser(container) {
                 const name = engine.replaceSpacesWithCapital(content.name)
                 const object = engine.environment.get(name)
 
-                const img = object.filePath
+                console.log(object)
 
-                return [img, "#E55137"]
+                // const img = object.filePath
+
+                return ["https://opengameart.org/sites/default/files/oga-textures/115038/templategrid_albedo.png", "#E55137"]
             },
             '.iemap': ['prism', '#317F43'],
             '.ieui': ['browsers', '#1E2460']
@@ -331,37 +333,18 @@ function renderContentBrowser(container) {
 
     }
 
+    // Function to import GLB and process its contents
     function importGltf(data, currentPath) {
         const loader = new GLTFLoader();
         const filePath = engine.createPath(currentPath, `${data.fileName}.iemesh`);
 
-        // Helper function to handle the processing of individual mesh objects
-        function processMesh(object) {
-            if (!object.isMesh) return;
-
-            const meshFilePath = engine.createPath(currentPath, `${object.name}.iemesh`);
-            const jsonObject = object.toJSON();
-
-            engine.writeToFile(JSON.stringify(jsonObject, null, 2), meshFilePath);
-            const info = engine.getFileInfo(meshFilePath);
-            info.filePath = meshFilePath;
-
-            engine.addEventListener('fileImported', info);
-        }
-
         // Function to handle the loaded GLTF file
         function onLoad(gltf) {
             const jsonScene = gltf.scene.toJSON();
+            engine.writeToFile(JSON.stringify(jsonScene, null, 2), filePath)
+                .catch(error => console.error(`Error writing scene file: ${filePath}`, error));
 
-            engine.writeToFile(JSON.stringify(jsonScene, null, 2), filePath);
-
-            const info = engine.getFileInfo(filePath);
-            info.filePath = filePath;
-
-            engine.addEventListener('fileImported', info);
-
-            gltf.scene.traverse(processMesh);
-
+            gltf.scene.traverse(object => processMesh(object, currentPath));
             engine.stopIndicate();
         }
 
@@ -377,8 +360,76 @@ function renderContentBrowser(container) {
             console.error('An error happened', error);
         }
 
-        // Load the GLTF file
+        // Load the GLB file
         loader.load(data.filePath, onLoad, onProgress, onError);
+    }
+
+    // Function to process individual mesh objects
+    function processMesh(object, currentPath) {
+        if (!object.isMesh) return;
+
+        const filePath = engine.createPath(currentPath, `${object.name}.iemesh`);
+        const jsonMesh = object.toJSON();
+        engine.writeToFile(JSON.stringify(jsonMesh, null, 2), filePath)
+
+        if (object.material) {
+            // Import material
+            importMaterial(object.material, currentPath);
+
+
+            // // Import textures
+            // if (object.material.map) {
+                
+            //     console.log(object.material)
+            //     importTextures(object.material.map, currentPath, object.material.name);
+            // }
+        }
+    }
+
+    // Function to import material
+    function importMaterial(material, currentPath) {
+        console.log('material: ',material)
+
+
+
+
+        const prefixMap = {
+            'map': 'D_',                  // Diffuse map
+            'normalMap': 'N_',            // Normal map
+            'specularMap': 'S_',          // Specular map
+            'roughnessMap': 'R_',         // Roughness map
+            'metalnessMap': 'M_',         // Metallic map
+            'aoMap': 'A_',                // Ambient Occlusion map
+            'displacementMap': 'H_',      // Height map (Displacement)
+            'alphaMap': 'O_',             // Opacity map
+            'emissiveMap': 'E_',          // Emissive map (if used)
+            // Add other mappings as needed
+        };
+        
+        
+        // Iterate over the material properties and apply prefixes based on the mapping
+        Object.keys(material).forEach(key => {
+            const texture = material[key];
+            if (texture && texture instanceof THREE.Texture) {
+                const prefix = prefixMap[key] || 'U_'; // Default to 'U_' if key is not in the map
+                texture.name = `${prefix}${material.name}`
+                importTextures(texture, currentPath, `${prefix}${material.name}`);
+            }
+        });
+
+
+        const materialFilePath = engine.createPath(currentPath, `M_${material.name}.iemat`);
+        const jsonMaterial = material.toJSON();
+        engine.writeToFile(JSON.stringify(jsonMaterial, null, 2), materialFilePath)
+            .catch(error => console.error(`Error writing material file: ${materialFilePath}`, error));
+    }
+
+    // Function to import textures
+    function importTextures(texture, currentPath, materialName) {
+        const textureFilePath = engine.createPath(currentPath, `T_${materialName}.ieasset`);
+        const jsonTexture = texture.toJSON(); // Assuming texture has a toJSON method
+        engine.writeToFile(JSON.stringify(jsonTexture, null, 2), textureFilePath)
+            .catch(error => console.error(`Error writing texture file: ${textureFilePath}`, error));
     }
 
     function importImage(data, currentPath) {

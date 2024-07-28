@@ -2,6 +2,7 @@ import * as THREE from '../three/build/three.module.js';
 import { DragControls } from './DragControls.js';
 import { IEuiLoader, IUGHandler, ParentCanvas } from '../Global/IUD.js';
 import IEuiLibrary from './IEuiLibrary.js';
+import { Grid } from '../three/Grid.js';
 
 const IEui = new IEuiLibrary();
 const loader = new IEuiLoader();
@@ -35,11 +36,26 @@ function renderViewport(container, ui) {
         height / 2, height / -2,
         0.1, 1000
     );
-    EditorCamera.position.z = 5;
+    // const EditorCamera = new THREE.PerspectiveCamera(5, width / height, 0.01, 1000)
+    EditorCamera.position.z = 50;
 
-    const gridHelper = new THREE.GridHelper(100000, 1000, 0x222222, 0x222222);
-    gridHelper.rotation.x = Math.PI / 2;
-    UIScene.add(gridHelper);
+    const gridHelper = Grid({
+        args: [100.5, 100.5],
+        cellSize: 60,
+        cellThickness: 1,
+        cellColor: new THREE.Color('#252525'),
+        sectionSize: 240,
+        sectionThickness: 1.5,
+        sectionColor: new THREE.Color('#111111'),
+        fadeDistance: 60000,
+        fadeStrength: 1,
+        followCamera: false,
+        infiniteGrid: true,
+    })
+
+    gridHelper.mesh.rotation.x = Math.PI / 2;
+    gridHelper.mesh.position.z = -50
+    UIScene.add(gridHelper.mesh);
 
     const UIGroup = new THREE.Group();
     UIGroup.name = 'IEui';
@@ -112,7 +128,7 @@ function renderViewport(container, ui) {
                     addObject(item, selectedObjects[0]);
                 } else {
                     addObject(item, selectedObjects[0].parent);
-                    
+
                 }
             } else {
                 addObject(item, Canvas);
@@ -175,7 +191,8 @@ function renderViewport(container, ui) {
         const deltaY = e.deltaY;
         EditorCamera.zoom += 0.0001 * deltaY;
         matchZoom = (EditorCamera.zoom ** -1);
-        EditorCamera.zoom = Math.max(0.1, Math.min(3, EditorCamera.zoom));
+        EditorCamera.zoom = Math.max(0.1, Math.min(30, EditorCamera.zoom));
+
     }
 
     function onMouseDown(event) {
@@ -242,7 +259,7 @@ function renderViewport(container, ui) {
             clearSelection();
         }
 
-        
+
 
         document.dispatchEvent(new CustomEvent('updateSelection', { detail: { object: selectedObjects } }));
     }
@@ -250,12 +267,12 @@ function renderViewport(container, ui) {
     function selectNewObject(object) {
         const selected = object;
         clearSelection();
-            if (!UIScene.getObjectByName(selected.name + 'Helper')) {
-                selectedObjects = [selected];
-                helpers[selected.name] = new THREE.BoxHelper(selected, selected.typeColor);
-                helpers[selected.name].name = selected.name + 'Helper';
-                UIScene.add(helpers[selected.name]);
-            }
+        if (!UIScene.getObjectByName(selected.name + 'Helper')) {
+            selectedObjects = [selected];
+            helpers[selected.name] = new THREE.BoxHelper(selected, selected.typeColor);
+            helpers[selected.name].name = selected.name + 'Helper';
+            UIScene.add(helpers[selected.name]);
+        }
         document.dispatchEvent(new CustomEvent('updateSelection', { detail: { object: selectedObjects } }));
 
     }
@@ -290,13 +307,16 @@ function renderViewport(container, ui) {
         EditorCamera.right = width / 2;
         EditorCamera.top = height / 2;
         EditorCamera.bottom = height / -2;
+
+        // EditorCamera.aspect = width / height
         EditorCamera.updateProjectionMatrix();
+        gridHelper.update(EditorCamera)
 
         IUGhandler.setSize(UIWidth, UIHeight);
         IUGhandler.update();
         renderer.render(UIScene, EditorCamera);
     }
-    
+
     renderer.setAnimationLoop(animate);
 
     document.getElementById('save').onclick = () => {
@@ -315,4 +335,4 @@ function renderViewport(container, ui) {
 }
 
 window.renderViewport = renderViewport;
-document.dispatchEvent(new CustomEvent('panelReady', {detail: {panel: renderViewport, title: 'IUG'}}))
+document.dispatchEvent(new CustomEvent('panelReady', { detail: { panel: renderViewport, title: 'IUG' } }))

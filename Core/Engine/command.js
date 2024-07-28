@@ -63,13 +63,22 @@ export class CustomShortcut {
 
     init() {
         document.addEventListener('keydown', this.handleKeydown.bind(this));
+        document.addEventListener('keyup', this.handleKeyup.bind(this));
     }
 
     handleKeydown(event) {
         const key = this.getKey(event);
-        if (this.shortcuts[key]) {
+        if (this.shortcuts[key] && this.shortcuts[key][0]) {
             event.preventDefault(); // Prevent default action if a shortcut is triggered
-            this.shortcuts[key]();
+            this.shortcuts[key][0]();
+        }
+    }
+
+    handleKeyup(event) {
+        const key = this.getKey(event);
+        if ( this.shortcuts[key] && this.shortcuts[key][1]) {
+            event.preventDefault(); // Prevent default action if a shortcut is triggered
+            this.shortcuts[key][1]();
         }
     }
 
@@ -83,9 +92,9 @@ export class CustomShortcut {
         return key;
     }
 
-    addShortcut(keyCombination, action) {
+    addShortcut(keyCombination, action, actionEnd = ()=>{}) {
         if (typeof keyCombination === 'string' && typeof action === 'function') {
-            this.shortcuts[keyCombination] = action;
+            this.shortcuts[keyCombination] = [action, actionEnd];
         } else {
             console.error('Invalid keyCombination or action');
         }

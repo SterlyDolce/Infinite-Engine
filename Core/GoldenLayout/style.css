@@ -324,3 +324,20 @@ button:disabled {
     padding: 1px;
     padding-right: 20px;
 }
+
+.pie-menu-option{
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 2px solid #333;
+    background-color: #222;
+}
+
+.pie-menu-option.selectedPie{
+    transform: scale(1.2);
+    background-color: #0090ff;
+}
+
+*{
+    user-select: none;
+}

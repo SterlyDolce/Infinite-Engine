@@ -1,5 +1,6 @@
 import * as COMMAND from "../Core/Engine/command.js";
 import * as THREE from "../three/build/three.module.js";
+import { PieMenu } from "./ui.js";
 
 let shortcuts = new COMMAND.CustomShortcut();
 
@@ -163,12 +164,12 @@ menuBar.addTitleMenuItem(data.name);
 const fileContextMenuContent = [
     'New Project',
     ['New Map', ['Blank Scene', 'Basic Scene']],
-    ['New File', ['New Script', 'New Component']],
+    ['New File', ['New Script', 'New Actor']],
     '?/',
-    'Open File',
     'Open Project',
     '?/',
     'Save',
+    'Save as',
     'Export Selection',
     'Import',
     '?/',
@@ -244,11 +245,13 @@ function MenuClicked(e) {
         case 'New-Project':
             engine.createNewProject();
             break;
-        case 'Open-File':
-            engine.openFile();
+        case 'Open-Project':
+            engine.openNewProject();
             break;
         case 'Save':
-            engine.saveCurrentFile();
+            engine.saveCurrentProject();
+        case 'Save-as':
+            engine.saveCurrentProject();
             break;
         case 'Export-Selection':
             engine.exportSelection();
@@ -294,7 +297,7 @@ function MenuClicked(e) {
             engine.startDebugging();
             break;
         case 'Run-Game':
-            engine.runGame();
+            engine.play();
             break;
         case 'Stop-Debugging':
             engine.stopDebugging();
@@ -368,7 +371,7 @@ shortcuts.addShortcut('Ctrl+n', () => {
 });
 
 shortcuts.addShortcut('Ctrl+o', () => {
-    engine.openFile();
+    engine.openNewProject();
 });
 
 shortcuts.addShortcut('Ctrl+s', () => {
@@ -388,11 +391,11 @@ shortcuts.addShortcut('Ctrl+q', () => {
 });
 
 shortcuts.addShortcut('Ctrl+z', () => {
-    engine.undo();
+    engine.stateManager.undo();
 });
 
 shortcuts.addShortcut('Ctrl+Shift+z', () => {
-    engine.redo();
+    engine.stateManager.redo();
 });
 
 shortcuts.addShortcut('Ctrl+x', () => {
@@ -438,3 +441,62 @@ shortcuts.addShortcut('Ctrl+g', () => {
 shortcuts.addShortcut('Ctrl+Shift+u', () => {
     engine.hideUI();
 });
+
+
+
+
+
+
+
+shortcuts.addShortcut(' ', () => {
+    document.dispatchEvent(new CustomEvent('openPie'));
+}, () => {
+    document.dispatchEvent(new CustomEvent('closePie'));
+});
+
+let pieMenu = new PieMenu(100); // Example radius of 100
+let me = [
+    { label: 'Option 1', action: () => console.log('Option 1 selected') },
+    { label: 'Option 2', action: () => console.log('Option 2 selected') },
+    { label: 'Option 3', action: () => console.log('Option 3 selected') }
+]; // Example menu options
+
+document.addEventListener('mousemove', updateMouse);
+
+let mouseX = 0;
+let mouseY = 0;
+let target = null
+let isPie = false;
+
+function updateMouse(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    target = e.target
+
+    
+    
+    pieMenu.line.setAttribute('y2', e.clientY)
+    pieMenu.line.setAttribute('x2', e.clientX)
+}
+
+document.addEventListener('openPie', openPie);
+document.addEventListener('closePie', closePie);
+
+function openPie() {
+    if (!isPie) {
+        isPie = true;
+        pieMenu.show(mouseX, mouseY, engine.pieMenu[target.getAttribute('panel')] || []);
+        // console.log(target.getAttribute('panel'))
+    }
+}
+
+function closePie() {
+    if (isPie) {
+        pieMenu.hide();
+        isPie = false;
+    }
+}
+
+
+
+

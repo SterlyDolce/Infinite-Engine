@@ -5,7 +5,7 @@ class UI {
         this.IEui = true;
         this.element = document.createElement('div');
 
-        this.element.addEventListener('mousedown', (e)=>{
+        this.element.addEventListener('mousedown', (e) => {
             e.stopPropagation()
         })
 
@@ -79,7 +79,7 @@ class Row extends UI {
 }
 
 class Label extends UI {
-    constructor({forElement, children}) {
+    constructor({ forElement, children }) {
         super({ children })
         this.element = document.createElement('label');
         this.element.htmlFor = forElement.element.id
@@ -488,8 +488,8 @@ class Select extends UI {
         this.initializeSelect();
     }
 
-    setMenu(menu){
-        this.menu = [{name: 'select an item', value: ''},...menu];
+    setMenu(menu) {
+        this.menu = [{ name: 'select an item', value: '' }, ...menu];
         this.element.innerHTML = ''
         this.initializeSelect()
     }
@@ -669,7 +669,7 @@ class ImageSelect extends UI {
             span.textContent = selectElement.options[i].textContent;
             span.style.alignContent = 'center'
             optionDiv.appendChild(span)
-            
+
             optionDiv.addEventListener("click", (e) => {
                 this.optionSelected(optionDiv, selectElement, selectedDiv);
                 this.onChanged(selectElement.value);
@@ -733,17 +733,17 @@ class ImageSelect extends UI {
 
         try {
             selectElement.value = value;
-        selectedDiv.style.backgroundImage = `url(${value})`;
+            selectedDiv.style.backgroundImage = `url(${value})`;
 
-        const optionsDivs = this.element.querySelectorAll(".select-items div");
-        optionsDivs.forEach(optionDiv => {
-            optionDiv.classList.remove("same-as-selected");
-            if (optionDiv.textContent === selectElement.options[selectElement.selectedIndex].textContent) {
-                optionDiv.classList.add("same-as-selected");
-            }
-        });
+            const optionsDivs = this.element.querySelectorAll(".select-items div");
+            optionsDivs.forEach(optionDiv => {
+                optionDiv.classList.remove("same-as-selected");
+                if (optionDiv.textContent === selectElement.options[selectElement.selectedIndex].textContent) {
+                    optionDiv.classList.add("same-as-selected");
+                }
+            });
         } catch (error) {
-            
+
         }
 
         return this;
@@ -879,7 +879,7 @@ class Outliner extends UI {
                 this.element.dispatchEvent(selectEvent)
             }
 
-            header.addEventListener('dragstart', (e)=>{
+            header.addEventListener('dragstart', (e) => {
                 localStorage.setItem('adding', JSON.stringify(object))
                 e.dataTransfer.setData('data', JSON.stringify([object.name, object.type]))
             })
@@ -1194,11 +1194,11 @@ class GridContent extends UI {
                     this.selectObjects = this.selectObjects.filter(item => item !== object)
                     const selectedItem = this.element.querySelector(`[data-id="${object[this.difference]}"]`)
                     if (selectedItem) selectedItem.classList.add('selected')
-                    } else {
+                } else {
                     this.selectObjects.push(object)
                     const selectedItem = this.element.querySelector(`[data-id="${object[this.difference]}"]`)
                     if (selectedItem) selectedItem.classList.add('selected')
-                    }
+                }
             }
         }
 
@@ -1301,18 +1301,18 @@ class GridContent extends UI {
 
                 if (typeof this.icons[element[this.iconDiference]] === 'function') {
                     const existingIcon = localStorage.getItem(element.name)
-                    if (!existingIcon) {
-                        const iconPrev = this.icons[element[this.iconDiference]]({ ...element, index })
-                        localStorage.setItem(element.name, JSON.stringify(iconPrev))
-                        previewRender.style.borderColor = iconPrev[1]
-                        previewRender.innerHTML = ''
-                        previewRender.style.backgroundImage = `url(${iconPrev[0].replace(/\\/g, '/')}`
-                        previewRender.style.backgroundSize = '100% 100%'
-                    } else {
+                    if (existingIcon && JSON.parse(existingIcon)[0]) {
                         const iconPrev = JSON.parse(existingIcon)
                         previewRender.style.borderColor = iconPrev[1]
                         previewRender.innerHTML = ''
                         previewRender.style.backgroundImage = `url(${iconPrev[0].replace(/\\/g, '/')}`
+                    } else {
+                        const iconPrev = this.icons[element[this.iconDiference]]({ ...element, index })
+                        // localStorage.setItem(element.name, JSON.stringify(iconPrev))
+                        previewRender.style.borderColor = iconPrev[1]
+                        previewRender.innerHTML = ''
+                        previewRender.style.backgroundImage = `url(${iconPrev[0].replace(/\\/g, '/')}`
+                        previewRender.style.backgroundSize = '100% 100%'
                     }
                 } else {
                     const iconName = this.icons[element[this.iconDiference]]
@@ -1487,6 +1487,86 @@ class Bool extends UI {
 
 
 
+
+class PieMenu extends UI {
+    constructor(radius) {
+        super();
+        this.element = document.createElement('div');
+        this.element.id = 'Pi';
+        this.options = [];
+        this.radius = radius;   // radius of the pie menu
+        this.angleStep = 0; // angle between each option, calculated on show
+        this.selectedOption = null;
+
+
+        this.line = document.getElementById('PieLine')
+
+        this.endX = 0
+        this.endY = 0
+    }
+
+    createMenu() {
+        this.element.innerHTML = '';
+        this.options.forEach((option, index) => {
+            let angle = index * this.angleStep;
+            let x = this.centerX + this.radius * Math.cos(angle);
+            let y = this.centerY + this.radius * Math.sin(angle);
+            let optionElement = this.createOptionElement(option, x, y);
+            this.element.appendChild(optionElement);
+        });
+    }
+
+    createOptionElement(option, x, y) {
+        let element = document.createElement('div');
+        element.className = 'pie-menu-option';
+        element.style.position = 'absolute';
+        element.style.left = `${x}px`;
+        element.style.top = `${y}px`;
+        element.innerText = option.label;
+        element.style.zIndex = 1234567890;
+        element.onmouseenter = () => {
+            this.selectedOption = option;
+            document.querySelectorAll('.pie-menu-option').forEach(option => {
+                option.classList.remove('selectedPie');
+            });
+            element.classList.add('selectedPie');
+        };
+        return element;
+    }
+
+    show(centerX, centerY, options = this.options) {
+        if(options.length == 0) return
+        this.options = options; // array of menu options
+        this.centerX = centerX; // center X coordinate
+        this.centerY = centerY; // center Y coordinate
+        this.angleStep = 2 * Math.PI / options.length;
+        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'block'
+        this.line = document.getElementById('PieLine')
+        this.line.setAttribute('x1', centerX);
+        this.line.setAttribute('y1', centerY);
+        this.createMenu();
+        document.body.appendChild(this.element);
+    }
+
+    hide() {
+        if (this.selectedOption) {
+            this.selectedOption.action();
+            this.selectedOption = null;
+        }
+
+        if (document.getElementById('Pi')) document.getElementById('Pi').remove();
+        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'none'
+        
+    }
+
+    update(x, y){
+        this.endX = x
+        this.endY = y
+    }
+}
+
+
+
 export {
     UI,
     Column,
@@ -1508,5 +1588,6 @@ export {
     Bool,
     ImageSelect,
     Label,
-    Checkbox
+    Checkbox,
+    PieMenu
 }

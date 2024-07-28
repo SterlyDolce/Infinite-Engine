@@ -25,6 +25,7 @@ class Engine {
         this.activeScene = null
         this.stateManager = new StateManager();
         this.deselectObject = () => { };
+        this.deleteSelectedObjects = () => {}
         this.selectNewObject = () => { };
         this.deleteObject = () => { };
         this.openNewMap = async (map) => { };
@@ -32,7 +33,16 @@ class Engine {
         this.showLoaderModal = (xhr) => { };
 
 
-        document.addEventListener('ThreeLoaded', (e)=>{
+        this.pieMenu = {
+            Viewport: [
+                { label: 'Delete', action: () => this.deleteSelectedObjects() },
+                { label: 'Option 2', action: () => console.log('Option 2 selected') },
+                { label: 'Option 3', action: () => console.log('Option 3 selected') }
+            ]
+        }
+
+
+        document.addEventListener('ThreeLoaded', (e) => {
             const THREE = e.detail
             this.THREE = THREE
             this.environment.MK_NATIVE_FN('Color', (...param) => new THREE.Color(...param));
@@ -58,13 +68,6 @@ class Engine {
     }
 
     setupEventListeners() {
-        document.addEventListener('keydown', (e) => {
-            if (e.metaKey || e.ctrlKey) {
-                if (e.key === 'z') {
-                    e.shiftKey ? this.stateManager.redo() : this.stateManager.undo();
-                }
-            }
-        });
 
         document.onkeydown = (e) => {
 
@@ -112,8 +115,23 @@ class Engine {
         if (fileName === '.DS_Store') return;
 
         const loaders = {
-            Actor: (path) => loader.load(path, (actor) => this.setVar(actor, path, fileName), (xhr)=> {}),
-            Mesh: (path) => loader.load(path, (mesh) => {this.setVar(mesh, path, fileName); this.stopIndicate()}, (xhr)=> {this.loadingIndicator('Mesh', xhr)}),
+            Actor: (path) => loader.load(path, (actor) => this.setVar(actor, path, fileName), (xhr) => { }),
+            Mesh: (path) => loader.load(path, (mesh) => { this.setVar(mesh, path, fileName); this.stopIndicate() }, (xhr) => { this.loadingIndicator('Mesh', xhr) }),
+            Texture: (path) => {
+                const textureLoader = new this.THREE.TextureLoader();
+                const texture = textureLoader.load(path)
+                texture.name = fileName
+                const image = texture.image;
+                console.log('loaded, ', image)
+                this.setVar(texture, path, fileName)
+            },
+            Material: (path) => {
+                const materialLoader = new this.THREE.MaterialLoader()
+                materialLoader.load(path, material => {
+                    material.filePath = path
+                    this.setVar(material, path, fileName)
+                })
+            },
             Animation: (path) => loader.load(path, (animation) => this.setVar(animation, path, fileName)),
             Audio: (path) => {
                 const audioLoader = new this.THREE.AudioLoader();
@@ -125,16 +143,9 @@ class Engine {
             },
             UI: (path) => this.IEui.load(path, (ui) => this.setVar(ui, path, fileName)),
             Scene: (path) => loader.load(path, (scene) => this.setVar(scene, path, fileName)),
-            Material: (path) => loader.load(path, (material) => this.setVar(material, path, fileName)),
-            Map: (path) => loader.load(path, (map) => this.setVar(map, path, fileName)),
-            Texture: (path) => {
-                const textureLoader = new this.THREE.TextureLoader();
-                textureLoader.load(path, (texture) => {
-                    texture.name = fileName
-                    this.setVar(texture, path, fileName)
 
-                })
-            },
+            Map: (path) => loader.load(path, (map) => this.setVar(map, path, fileName)),
+
             Custom: (path) => this.environment.MK_VAR(this.replaceSpacesWithCapital(fileName), filePath),
             Script: (path) => {
                 // const scriptLoader = new this.THREE.ScriptLoader()
@@ -152,7 +163,7 @@ class Engine {
         const fileImported = new CustomEvent('refreshContents', { detail: {} });
         document.dispatchEvent(fileImported);
 
-        fs.watch(filePath,{recursive: true}, (eventType) => {
+        fs.watch(filePath, { recursive: true }, (eventType) => {
             if (eventType === 'change') {
                 const fileUpdated = new CustomEvent('fileUpdated', { detail: { fileName, filePath, fileType } });
                 document.dispatchEvent(fileImported);
@@ -161,7 +172,7 @@ class Engine {
             }
         });
 
-        fs.watchFile(filePath,{recursive: true}, (eventType) => {
+        fs.watchFile(filePath, { recursive: true }, (eventType) => {
             if (eventType === 'change') {
                 const fileUpdated = new CustomEvent('fileUpdated', { detail: { fileName, filePath, fileType } });
                 document.dispatchEvent(fileImported);
@@ -183,22 +194,82 @@ class Engine {
     }
 
     async createNewProject() {
-        // const resultJSON = await ipcRenderer.invoke('createNew', this.version);
-        // const result = JSON.parse(resultJSON);
-        this.openNewProject('../templates/blank', true)
+        try {
+            const templates = {
+                _blank: path.join(__dirname, '../templates/blank')
+            };
+
+            // Await the result of saveCurrentProject
+            const filePath = await this.saveCurrentProject();
+            if (!filePath) return; // If the filePath is not valid, exit the function
+
+            const source = templates._blank;
+            const destination = filePath;
+
+            // Create destination directory
+            await fs.mkdirSync(destination, { recursive: true });
+
+            // Read directory contents
+            const items = await fs.readdirSync(source, { withFileTypes: true });
+
+            // Copy each item from the source to the destination
+            for (const item of items) {
+                const srcPath = path.join(source, item.name);
+                const destPath = path.join(destination, item.name);
+
+                if (item.isDirectory()) {
+                    // Recursively copy directories
+                    await this.copyDirectory(srcPath, destPath);
+                } else {
+                    // Copy files
+                    await fs.copyFileSync(srcPath, destPath);
+                }
+            }
+
+            // Open the new project
+            await this.openNewProject(filePath, true);
+
+        } catch (error) {
+            console.error('Error creating new project:', error);
+        }
+    }
+
+    async copyDirectory(source, destination) {
+        fs.mkdirSync(destination, { recursive: true });
+
+        const items = fs.readdirSync(source, { withFileTypes: true });
+
+        for (const item of items) {
+            const srcPath = path.join(source, item.name);
+            const destPath = path.join(destination, item.name);
+
+            if (item.isDirectory()) {
+                await this.copyDirectory(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
+        }
+    }
+
+    async saveCurrentProject(projectPath = '') {
+        const defaultPath = path.join(os.homedir(), 'Documents', 'IEProjects');
+        const result = await ipcRenderer.invoke('save-dir-dialog', defaultPath);
+        if (!result.canceled && result.filePath) {
+            return result.filePath
+        }
     }
 
     async openNewProject(projectPath = '', imediate = false) {
-        
+
         const processDirectory = async (directoryPath) => {
-            if(imediate){
+            if (imediate) {
                 directoryPath = path.join(__dirname, directoryPath)
             }
             console.log(directoryPath)
-            document.dispatchEvent( new CustomEvent('closeWelcomePage', { detail: { } }))
+            document.dispatchEvent(new CustomEvent('closeWelcomePage', { detail: {} }))
             try {
                 const files = await fs.promises.readdir(directoryPath);
-                
+
                 for (const file of files) {
                     const filePath = path.join(directoryPath, file);
                     const type = this.determineFileType(filePath);
@@ -206,7 +277,7 @@ class Engine {
                         const projectJson = await fs.promises.readFile(filePath, 'utf-8');
                         const Project = JSON.parse(projectJson);
                         this.project = Project
-                        window.localStorage.setItem('Project', JSON.stringify({ ...Project, path: directoryPath }));
+                        // window.localStorage.setItem('Project', JSON.stringify({ ...Project, path: directoryPath }));
                         this.parseProject(Project, directoryPath);
                     }
                 }
@@ -219,12 +290,12 @@ class Engine {
         };
 
         if (projectPath) {
-            if(imediate){
+            if (imediate) {
                 processDirectory(projectPath);
             } else {
-                document.addEventListener('DOMContentLoaded',()=> processDirectory(projectPath))
+                document.addEventListener('DOMContentLoaded', () => processDirectory(projectPath))
             }
-            
+
         } else {
             const defaultPath = path.join(os.homedir(), 'Documents', 'IEProjects');
             const result = await ipcRenderer.invoke('open-dir-dialog', defaultPath);
@@ -244,7 +315,7 @@ class Engine {
         const { settings, maps, scripts } = project;
         const EditorMap = settings.maps.editor_default;
 
-        
+
 
         for (const map of maps) {
             if (map.uuid === EditorMap) {
@@ -252,7 +323,7 @@ class Engine {
                 const loader = new this.THREE.ObjectLoader();
                 loader.load(filePath, (object) => {
                     this.openMap(object);
-                    document.dispatchEvent(new CustomEvent('openEditor', {detail: {filePath: filePath, type: 'Level'}}))
+                    document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: filePath, type: 'Level' } }))
                     this.stopIndicate();
                 }, (xhr) => this.loadingIndicator("Project ", xhr));
             }
@@ -263,16 +334,16 @@ class Engine {
         }
     }
 
-    parseScripts(directoryPath, scriptJSON, settings){
+    parseScripts(directoryPath, scriptJSON, settings) {
         const filePath = path.join(directoryPath, scriptJSON.path);
-        const code = fs.readFileSync(filePath, {encoding: 'utf-8'})
+        const code = fs.readFileSync(filePath, { encoding: 'utf-8' })
         const script = new this.THREE.Script(scriptJSON.id, code)
         if (scriptJSON.env) script.environment = scriptJSON.env
         script.path = filePath
         this.environment.MK_VAR(this.replaceSpacesWithCapital(scriptJSON.id), script)
         if (scriptJSON.uuid == settings.scripts.main) engine.mainScript = script
 
-        fs.watch(filePath,{recursive: true}, (eventType) => {
+        fs.watch(filePath, { recursive: true }, (eventType) => {
             if (eventType === 'change') {
                 const fileUpdated = new CustomEvent('fileUpdated', { detail: { name: scriptJSON.id, filePath, fileType: 'Script' } });
                 document.dispatchEvent(new CustomEvent('refreshContents', { detail: {} }));
@@ -605,14 +676,14 @@ class Engine {
 
     openEditor(filepath) {
         const { type } = this.getFileInfo(filepath)
-        document.dispatchEvent(new CustomEvent('openEditor', {detail: {filePath: filepath, type: type}}))
+        document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: filepath, type: type } }))
         // switch (type) {
         //     case 'Actor':
         //         // ipcRenderer.invoke('open-actor-editor', filepath);
         //         break;
 
         //     case 'UI':
-                
+
         //         // ipcRenderer.invoke('open-ui-editor', filepath);
         //         break;
 
@@ -728,7 +799,7 @@ if (onTick):
             }
         })
         this.executeMainScript(playSCene, camera)
-        
+
     }
 
     pause() {
@@ -748,7 +819,7 @@ if (onTick):
         this.removeEvents()
     }
 
-    removeEvents(){
+    removeEvents() {
         const event = new CustomEvent('removeEvents');
         document.dispatchEvent(event);
     }

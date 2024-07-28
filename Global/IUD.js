@@ -354,15 +354,15 @@ const textureLoader = new THREE.TextureLoader();
 class IUGButton extends IUGObject {
     constructor(anchor = 'center', width, height, states = {
         normal: {
-            image: 'gradient.png',
+            image: '../assets/gradient.png',
             color: '#ffffff'
         },
         hover: {
-            image: 'gradient.png',
+            image: '../assets/gradient.png',
             color: '#888888'
         },
         clicked: {
-            image: 'gradient.png',
+            image: '../assets/gradient.png',
             color: '#444444'
         }
     }) {
@@ -617,7 +617,7 @@ class IUGLabel extends IUGObject {
 
 // Image Class
 class IUGImage extends IUGObject {
-    constructor(anchor = 'center', width, height, color = '#ffffff', image = 'default.png') {
+    constructor(anchor = 'center', width, height, color = '#ffffff', image = '../assets/default.png') {
         super(anchor, new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial());
         this.allowChildren = false
         this.limitedChildren = 0
@@ -703,7 +703,7 @@ class IUGImage extends IUGObject {
 
 // Container class
 class IUGContainer extends IUGObject {
-    constructor(anchor = 'center', width, height, color = '#ffffff', image = 'default.png') {
+    constructor(anchor = 'center', width, height, color = '#ffffff', image = '../assets/default.png') {
         super(anchor, new THREE.PlaneGeometry(width, height), new THREE.MeshBasicMaterial());
         this.allowChildren = true
         this.limitedChildren = 1

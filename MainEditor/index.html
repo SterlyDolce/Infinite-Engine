@@ -27,6 +27,12 @@
 </head>
 
 <body>
+        <svg style="position: absolute; top: 0px; left: 0px; z-index: 1234567889; display: none;" id="plSVG"  height="100vh" width="100vw">
+                <line x1=0 y1=0 x2=500 y2="200" style="stroke:#333;stroke-width:5" id="PieLine" />
+                Sorry, your browser does not support inline SVG.
+        </svg>
+
+
         <script src="../Core/GoldenLayout/goldenlayout.min.js"></script>
 
         <script src="../Core/Engine/engine.js"></script>
@@ -89,22 +95,23 @@
         <template>
                 <div class="container"
                         style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; height: calc(100vh - 100px);">
-                        <img src="../assets/Infinite Icon.png" alt="Infinite" height="200"
+                        <img draggable="false" src="../assets/Infinite Icon.png" alt="Infinite" height="200"
                                 style="margin-top: 100px; filter: invert(1); opacity: 0.3;">
                         <div class="startupContainer" style="margin: 50px; margin-top: 100px;">
                                 <button class="startupButton" style="background-color: #0090ff;"
                                         onclick="engine.createNewProject()">
                                         Create New
                                 </button>
-                                <button class="startupButton">
+                                <button class="startupButton" onclick="engine.openNewProject()">
                                         Open Project
                                 </button>
-                                <button class="startupButton">
-                                        Clone From IEStore
-                                </button>
-                                <button class="startupButton">
-                                        Open IEStore
-                                </button>
+                                <a href="https://github.com/SterlyDolce/Infinite-Engine" target="_blank"
+                                        class="startupButton">
+                                        Github
+                                </a>
+                                <a href="https://threejs.org" target="_blank" class="startupButton">
+                                        THREEJS
+                                </a>
                         </div>
                 </div>
         </template>

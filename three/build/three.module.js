@@ -1984,6 +1984,7 @@ class Texture extends EventDispatcher {
 
 		super();
 
+
 		this.isTexture = true;
 
 		Object.defineProperty(this, 'id', { value: _textureId++ });

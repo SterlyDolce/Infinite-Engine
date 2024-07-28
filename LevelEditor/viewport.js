@@ -13,6 +13,9 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { ieCamControl } from 'three/addons/controls/ieCamControl.js';
 import { IUGButton, IUGCanvas, IUGHandler, IUGLabel, IEuiLoader } from '../Global/IUD.js';
 import { Button, Checkbox, Column, Input, Label, Row, Select, UI } from '../Global/ui.js'
+import { Grid } from '../three/Grid.js';
+import { Sky } from 'three/addons/objects/Sky.js';
+import { Clouds, CLOUD_URL, Cloud } from '../three/Clouds.js';
 
 
 engine.IEui = new IEuiLoader()
@@ -23,7 +26,7 @@ engine.IEui = new IEuiLoader()
 
 function renderViewport(container) {
     container.element = container._contentElement[0]
-
+    let clouds
 
     let isOnFocus = true
     let viewMode = 'lit'
@@ -134,9 +137,11 @@ function renderViewport(container) {
         rendererEdit.setSize(width, height);
         canvasContainer.append(rendererEdit.domElement);
         consol.addTo(container.element)
-        rendererEdit.domElement.onclick = ()=>{
+        rendererEdit.domElement.onclick = () => {
             engine.activeScene = mainScene
         }
+        rendererEdit.domElement.setAttribute('panel', 'Viewport')
+
 
         // Setup player renderer
         rendererPlay = new THREE.WebGLRenderer({ antialias: true });
@@ -191,8 +196,24 @@ function renderViewport(container) {
     }
 
     function setupGrid() {
-        gridHelper = new THREE.GridHelper(10000, 10000, '#202020', '#101010')
-        helperScene.add(gridHelper)
+        // gridHelper = new THREE.GridHelper(10000, 10000, '#202020', '#101010')
+        // helperScene.add(gridHelper)
+
+        gridHelper = Grid({
+            args: [10.5, 10.5],
+            cellSize: 0.5,
+            cellThickness: 2,
+            cellColor: new THREE.Color('#111'),
+            sectionSize: 5,
+            sectionThickness: 2.5,
+            sectionColor: new THREE.Color('#070707'),
+            fadeDistance: 50,
+            fadeStrength: 1,
+            followCamera: false,
+            infiniteGrid: true,
+        })
+
+        helperScene.add(gridHelper.mesh)
     }
 
     function setupControls() {
@@ -292,6 +313,12 @@ function renderViewport(container) {
         object.position.set(transform.position.x, transform.position.y, transform.position.z);
         object.rotation.set(transform.rotation.x, transform.rotation.y, transform.rotation.z);
         object.scale.set(transform.scale.x, transform.scale.y, transform.scale.z);
+    }
+
+    function deleteSelectedObjects(){
+        selectedObjects.forEach(object =>{
+            deleteObject(object)
+        })
     }
 
     function deleteObject(object) {
@@ -468,6 +495,60 @@ function renderViewport(container) {
         // addFloorToGroup();
         // addTorusToGroup();
         // addTokyoToGroup()
+
+
+        let sky, sun
+        // testSky()
+
+
+
+        function testSky() {
+            sky = new Sky();
+            sky.scale.setScalar(450000);
+            mainScene.add(sky);
+
+            sun = new THREE.Vector3();
+
+            /// GUI
+
+            const effectController = {
+                turbidity: 10,
+                rayleigh: 3,
+                mieCoefficient: 0.005,
+                mieDirectionalG: 0.7,
+                elevation: 2,
+                azimuth: 180,
+                exposure: rendererEdit.toneMappingExposure
+            }
+
+            function guiChanged() {
+
+                const uniforms = sky.material.uniforms;
+                uniforms['turbidity'].value = effectController.turbidity;
+                uniforms['rayleigh'].value = effectController.rayleigh;
+                uniforms['mieCoefficient'].value = effectController.mieCoefficient;
+                uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+
+                const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+                const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+
+                sun.setFromSphericalCoords(1, phi, theta);
+
+                uniforms['sunPosition'].value.copy(sun);
+
+                rendererEdit.toneMappingExposure = effectController.exposure;
+                rendererEdit.render(mainScene, camera);
+
+            }
+
+            guiChanged()
+        }
+
+
+
+
+
+
 
     }
 
@@ -856,7 +937,13 @@ func onOverlap(obj):
     }
 
 
-
+    function toggleFullScreen(){
+        if (document.fullscreenElement) {
+            document.exitFullscreen()
+        } else {
+            container.element.requestFullscreen()
+        }
+    }
 
 
     function setupUIHelpers() {
@@ -914,13 +1001,14 @@ func onOverlap(obj):
 
         const fullScreenButton = new Button(null, 'expand').style({ ...style, marginLeft: '5px' })
         fullScreenButton.onClick = () => {
-            if (document.fullscreenElement) {
-                document.exitFullscreen()
-                fullScreenButton.setIcon("expand")
-            } else {
-                container.element.requestFullscreen()
-                fullScreenButton.setIcon("contract")
-            }
+            toggleFullScreen()
+            // if (document.fullscreenElement) {
+            //     document.exitFullscreen()
+            //     fullScreenButton.setIcon("expand")
+            // } else {
+            //     container.element.requestFullscreen()
+            //     fullScreenButton.setIcon("contract")
+            // }
         }
 
 
@@ -959,14 +1047,10 @@ func onOverlap(obj):
         UIScene.children = []
         UIScene.clear()
 
-
-        // UICamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         UICamera.position.z = 10;
 
-
-
         IUGhandler = new IUGHandler(UIScene, UICamera, rendererPlay.domElement)
-        IUGhandler.setSize(500, 500)
+        IUGhandler.setSize(width, height)
 
 
     }
@@ -987,7 +1071,7 @@ func onOverlap(obj):
 
         if (isOnFocus) {
             // console.log(selectedObjects[0])
-            if (!selectedObjects[0]  && control) {
+            if (!selectedObjects[0] && control) {
                 control.detach();
                 mainScene.remove(control);
             }
@@ -1000,42 +1084,43 @@ func onOverlap(obj):
             const aspect = width / height
 
             //
-                UICamera.left = width / -2;
-                UICamera.right = width / 2;
-                UICamera.top = height / 2;
-                UICamera.bottom = height / -2;
-                UICamera.updateProjectionMatrix();
+            UICamera.left = width / -2;
+            UICamera.right = width / 2;
+            UICamera.top = height / 2;
+            UICamera.bottom = height / -2;
+            UICamera.updateProjectionMatrix();
             //
 
-                perspectiveCamera.zoom = zoom
-                perspectiveCamera.aspect = width / height;
-                perspectiveCamera.updateProjectionMatrix();
-    
-                camera.position.copy(perspectiveCamera.position);
-                camera.rotation.copy(perspectiveCamera.rotation);
-                camera.scale.copy(perspectiveCamera.scale);
-                camera.zoom = perspectiveCamera.zoom;
-    
-                //
-                orthographicCamera.left = -10 * aspect / 2
-                orthographicCamera.right = 10 * aspect / 2;
-                orthographicCamera.top = 10 / 2;
-                orthographicCamera.bottom = -10 / 2;
-                orthographicCamera.updateProjectionMatrix();
-                //
+            perspectiveCamera.zoom = zoom
+            perspectiveCamera.aspect = width / height;
+            perspectiveCamera.updateProjectionMatrix();
 
-                if(playerCamera){
-                    playerCamera.position.copy(perspectiveCamera.position);
-                    playerCamera.rotation.copy(perspectiveCamera.rotation);
-                    playerCamera.scale.copy(perspectiveCamera.scale);
-                    playerCamera.aspect = width / height;
-                    playerCamera.updateProjectionMatrix();
+            camera.position.copy(perspectiveCamera.position);
+            camera.rotation.copy(perspectiveCamera.rotation);
+            camera.scale.copy(perspectiveCamera.scale);
+            camera.zoom = perspectiveCamera.zoom;
+            gridHelper.update(camera)
+
+            //
+            orthographicCamera.left = -10 * aspect / 2
+            orthographicCamera.right = 10 * aspect / 2;
+            orthographicCamera.top = 10 / 2;
+            orthographicCamera.bottom = -10 / 2;
+            orthographicCamera.updateProjectionMatrix();
+            //
+
+            if (playerCamera) {
+                playerCamera.position.copy(perspectiveCamera.position);
+                playerCamera.rotation.copy(perspectiveCamera.rotation);
+                playerCamera.scale.copy(perspectiveCamera.scale);
+                playerCamera.aspect = width / height;
+                playerCamera.updateProjectionMatrix();
                 //
             }
 
-                rendererEdit.setSize(width, height);
-                rendererPlay.setSize(width, height);
-            
+            rendererEdit.setSize(width, height);
+            rendererPlay.setSize(width, height);
+
 
             composer.setSize(width, height);
             effectFXAA.uniforms['resolution'].value.set(1 / width, 1 / height);
@@ -1066,6 +1151,8 @@ func onOverlap(obj):
 
         const delta = clock.getDelta();
 
+        // clouds.update(playerCamera, clock.getElapsedTime(), clock.getDelta())
+
         const deltaTime = 1 / 60;
         updatePhysics(delta);
 
@@ -1089,6 +1176,24 @@ func onOverlap(obj):
         rigidBodies.forEach(obj => {
             obj.userData.physics.physicsBody.sync()
         });
+    }
+
+
+
+
+    function cloudss() {
+
+        const textureLoader = new THREE.TextureLoader()
+
+        const cloudTexture = textureLoader.load(CLOUD_URL)
+
+        clouds = new Clouds({ texture: cloudTexture })
+        playScene.add(clouds)
+
+        for (let i = 0; i < 10000; i++) {
+            const cloud_0 = new Cloud()
+            clouds.add(cloud_0)
+        }
     }
 
     function startPlayer() {
@@ -1187,6 +1292,7 @@ func onOverlap(obj):
     engine.startPlayer = startPlayer;
     engine.stopPlayer = stopPlayer;
     engine.deleteObject = deleteObject;
+    engine.deleteSelectedObjects = deleteSelectedObjects
     engine.addObject = addObject;
     engine.mainScene = mainScene
     engine.helperScene = helperScene
@@ -1194,6 +1300,7 @@ func onOverlap(obj):
     engine.selectNewObject = selectNewObject
     engine.reloadToScene = reloadToScene
     engine.loadloadToScene = loadToScene
+    engine.toggleFullScreen = toggleFullScreen
     engine.IUG = UIScene
 
     const playbtn = document.getElementById('PlayGame')
@@ -1310,9 +1417,7 @@ func onOverlap(obj):
 
 
 
-
     return mainScene
-
 }
 
 window.renderViewport = renderViewport;

@@ -91,7 +91,7 @@ class Interpreter {
     }
 
     initializeGlobalVar() {
-        this.globalEnv.MK_NATIVE_FN('log', (...arg)=>console.log(...arg));
+        this.globalEnv.MK_NATIVE_FN('log', (...arg)=>consol.log(...arg));
         this.globalEnv.MK_NATIVE_FN('copy', (object) => {
             function deepCopy(obj) {
                 if (obj === null || typeof obj !== 'object') {
