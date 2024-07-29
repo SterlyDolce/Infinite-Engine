@@ -137,7 +137,7 @@ function renderViewport(container) {
         rendererEdit.setSize(width, height);
         canvasContainer.append(rendererEdit.domElement);
         consol.addTo(container.element)
-        rendererEdit.domElement.onclick = () => {
+        rendererEdit.domElement.onmouseenter = () => {
             engine.activeScene = mainScene
         }
         rendererEdit.domElement.setAttribute('panel', 'Viewport')
@@ -181,9 +181,9 @@ function renderViewport(container) {
     }
 
     function setupCamera() {
-        playerCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-        orthographicCamera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0.1, 10000);
-        perspectiveCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
+        playerCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100000);
+        orthographicCamera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 0.1, 100000);
+        perspectiveCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100000);
         perspectiveCamera.position.set(0, 0, 8);
         camera = perspectiveCamera
         camControls = new ieCamControl(camera, rendererEdit.domElement);
@@ -207,7 +207,7 @@ function renderViewport(container) {
             sectionSize: 5,
             sectionThickness: 2.5,
             sectionColor: new THREE.Color('#070707'),
-            fadeDistance: 50,
+            fadeDistance: 100,
             fadeStrength: 1,
             followCamera: false,
             infiniteGrid: true,
@@ -362,10 +362,10 @@ function renderViewport(container) {
             parent: parent,
             object: object.clone() // Clone the object to capture its current state
         };
-
-        object.userData.physics = {}
-        object.userData.physics.mass = 0
-        object.userData.physics.velocity = { x: 0, y: 0, z: 0 }
+        object.name = engine.getUniqueObjectName(engine.activeScene, object.name)
+        // object.userData.physics = {}
+        // object.userData.physics.mass = 0
+        // object.userData.physics.velocity = { x: 0, y: 0, z: 0 }
 
         // Add object to parent
         parent.add(object);

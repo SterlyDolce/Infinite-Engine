@@ -25,7 +25,7 @@ class Engine {
         this.activeScene = null
         this.stateManager = new StateManager();
         this.deselectObject = () => { };
-        this.deleteSelectedObjects = () => {}
+        this.deleteSelectedObjects = () => { }
         this.selectNewObject = () => { };
         this.deleteObject = () => { };
         this.openNewMap = async (map) => { };
@@ -36,8 +36,23 @@ class Engine {
         this.pieMenu = {
             Viewport: [
                 { label: 'Delete', action: () => this.deleteSelectedObjects() },
-                { label: 'Option 2', action: () => console.log('Option 2 selected') },
-                { label: 'Option 3', action: () => console.log('Option 3 selected') }
+                { label: 'GeneratedTerrain', action: () => engine.addGeneratedTerrain() },
+                {
+                    label: 'Add ', items : [
+                        {label: "Directional Light", action: () => {
+
+                            const directionalLight = new this.THREE.DirectionalLight(0xffffff, 0.5);
+                            directionalLight.name = 'light'
+                            this.addObject(directionalLight,  this.activeScene.children[0]);
+                        }},
+                        {label: 'PointLight', action: () => {
+
+                            const pointLight = new this.THREE.PointLight(0xffffff, 0.5, 100);
+                            pointLight.name = 'light'
+                            this.addObject(pointLight,  this.activeScene.children[0]);
+                        }}
+                    ]
+                }
             ]
         }
 
@@ -277,7 +292,7 @@ class Engine {
                         const projectJson = await fs.promises.readFile(filePath, 'utf-8');
                         const Project = JSON.parse(projectJson);
                         this.project = Project
-                        // window.localStorage.setItem('Project', JSON.stringify({ ...Project, path: directoryPath }));
+                        window.localStorage.setItem('Project', JSON.stringify({ ...Project, path: directoryPath }));
                         this.parseProject(Project, directoryPath);
                     }
                 }
@@ -309,6 +324,48 @@ class Engine {
         this.openNewMap(map).then((newMap) => {
             this.sceneUpdated(newMap);
         });
+    }
+
+    generateTerrain(heightmap = '', width = 256, height = 256, depth = 50) {
+        // Load the heightmap
+        heightmap = 'https://raw.githubusercontent.com/cgcostume/pubg-maps/master/apollo/fortnite_apollo_height_l16_preview.png'
+        const loader = new this.THREE.TextureLoader();
+        const texture = loader.load(heightmap)
+
+        console.log(texture)
+
+        // Create a plane geometry
+        const geometry = new this.THREE.PlaneGeometry(200, 200, width - 1, height - 1);
+        geometry.rotateX(-Math.PI / 2);
+
+        // Get the pixel data from the heightmap texture
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext('2d');
+        context.drawImage(texture.image, 0, 0, width, height);
+        const imageData = context.getImageData(0, 0, width, height).data;
+
+        // Update the vertices of the plane geometry based on the heightmap data
+        for (let i = 0, j = 0; i < imageData.length; i += 4, j++) {
+            const gray = imageData[i] / 255;
+            geometry.attributes.position.setY(j, gray * depth);
+        }
+
+        geometry.computeVertexNormals();
+
+        // Create a mesh with the updated geometry
+        const material = new this.THREE.MeshLambertMaterial({ color: 0x8b4513 });
+        const terrain = new this.THREE.Mesh(geometry, material);
+        if (this.activeScene) activeScene.add(terrain);
+    }
+
+    addGeneratedTerrain() {
+        // Load the heightmap
+        const heightmap = 'heightmap.png'
+        const terrain = new this.THREE.Terrain(heightmap, 505, 505)
+        terrain.name = 'Terrain'
+        this.addObject(terrain, this.activeScene.children[0])
     }
 
     parseProject(project, directoryPath) {
@@ -486,6 +543,16 @@ class Engine {
 
         this.handleFileImported(this.getFileInfo(dest));
         return this.getFileInfo(dest)
+    }
+
+    getUniqueObjectName(parent, name) {
+        let counter = 1;
+        let uniqueName = `${name}`;
+        while (parent.traverse(child => child.name == uniqueName)) {
+            uniqueName = `${name}_${counter}`;
+            counter++;
+        }
+        return uniqueName;
     }
 
     getUniqueFileName(directory, baseName, extension) {

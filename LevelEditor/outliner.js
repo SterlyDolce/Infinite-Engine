@@ -30,7 +30,8 @@ function renderOutliner(container, scene){
             'DirectionalLight': ['sunny', '#e9ef07'],
             'PointLight': ['flame', '#e06666'],
             'Object3D': ['file-tray-full', '#b22929'],
-            'Bone': ['bone', '#948d8c']
+            'Bone': ['bone', '#948d8c'],
+            'Terrain': ['Terrain', '#a6e3d3']
         }
     })
     .style({ border: 'none', padding: '3px 5px', fontSize: "11px", borderRadius: "5px", backgroundColor: '#222', margin: '5px', color: "white", overflowY: "scroll", height: "100%", maxHeight: "calc(100% - 60px)"})

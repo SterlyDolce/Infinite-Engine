@@ -1503,6 +1503,8 @@ class PieMenu extends UI {
 
         this.endX = 0
         this.endY = 0
+
+        this.navigationStack = []
     }
 
     createMenu() {
@@ -1517,6 +1519,7 @@ class PieMenu extends UI {
     }
 
     createOptionElement(option, x, y) {
+        option.uuid = THREE.generateUUID()
         let element = document.createElement('div');
         element.className = 'pie-menu-option';
         element.style.position = 'absolute';
@@ -1525,13 +1528,34 @@ class PieMenu extends UI {
         element.innerText = option.label;
         element.style.zIndex = 1234567890;
         element.onmouseenter = () => {
-            this.selectedOption = option;
-            document.querySelectorAll('.pie-menu-option').forEach(option => {
-                option.classList.remove('selectedPie');
-            });
-            element.classList.add('selectedPie');
+            if(option.action && typeof option.action == 'function'){
+                this.selectedOption = option;
+                document.querySelectorAll('.pie-menu-option').forEach(option => {
+                    option.classList.remove('selectedPie');
+                });
+                element.classList.add('selectedPie');
+            }
+            
+
+            if(option.items && option.items[0]){
+                this.navigationStack.push(this.options)
+                const bbox = element.getBoundingClientRect()
+                const centerX = bbox.x + bbox.width/2
+                const centerY = bbox.y + bbox.height/2
+                this.clearSelection()
+                this.hide()
+
+                this.show(centerX, centerY, [
+                    {label: option.label, items: this.navigationStack.pop()},
+                    ...option.items])
+            }
         };
+        option.element = element
         return element;
+    }
+
+    back(centerX, centerY){
+        console.log('back')
     }
 
     show(centerX, centerY, options = this.options) {
@@ -1550,7 +1574,7 @@ class PieMenu extends UI {
 
     hide() {
         if (this.selectedOption) {
-            this.selectedOption.action();
+            if (this.selectedOption.action) this.selectedOption.action();
             this.selectedOption = null;
         }
 
@@ -1562,6 +1586,15 @@ class PieMenu extends UI {
     update(x, y){
         this.endX = x
         this.endY = y
+
+        if(x - this.centerX < 50 && y - this.centerX < 50) this.clearSelection()
+    }
+
+    clearSelection(){
+        document.querySelectorAll('.pie-menu-option').forEach(option => {
+            option.classList.remove('selectedPie');
+        });
+        this.selectedOption = null;
     }
 }
 

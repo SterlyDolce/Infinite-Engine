@@ -180,7 +180,7 @@ class NumericInput extends MultiInputs {
         return this
     }
 
-    onChanged(value){}
+    onChanged(value) { }
 }
 
 class Vector3Input extends MultiInputs {
@@ -191,9 +191,9 @@ class Vector3Input extends MultiInputs {
         super({ title: name, children: [X, Y, Z] })
 
 
-        X.onChanged = (value) => this.onChanged({...this.getValue(), x: value})
-        Y.onChanged = (value) => this.onChanged({...this.getValue(), y: value})
-        Z.onChanged = (value) => this.onChanged({...this.getValue(), z: value})
+        X.onChanged = (value) => this.onChanged({ ...this.getValue(), x: value })
+        Y.onChanged = (value) => this.onChanged({ ...this.getValue(), y: value })
+        Z.onChanged = (value) => this.onChanged({ ...this.getValue(), z: value })
     }
 
     getValue() {
@@ -211,7 +211,7 @@ class Vector3Input extends MultiInputs {
         return this
     }
 
-    onChanged(value) {}
+    onChanged(value) { }
 }
 
 class Vector3Array extends MultiInputs {
@@ -280,7 +280,7 @@ class BooleanToggle extends MultiInputs {
         return this
     }
 
-    onChanged(value) {}
+    onChanged(value) { }
 }
 
 
@@ -308,6 +308,25 @@ function renderDetails(container) {
             margin: '10px',
             fontSize: "14px",
             fontWeight: "bold"
+        })
+
+    const rX = new Input("x", 'number').style({ borderLeft: '2px solid #333', minWidth: '40px', maxWidth: '40px', padding: '3px 5px', })
+    const rY = new Input("y", 'number').style({ borderLeft: '2px solid #333', minWidth: '40px', maxWidth: '40px', padding: '3px 5px', })
+    const resolution = new MultiInputs({ title: "Resolution", children: [rX, rY] })
+
+    const ImportHeightmapFile = new Input("Import From File", 'file').style({ borderLeft: '2px solid #333', minWidth: '40px', maxWidth: '40px', padding: '3px 5px', })
+    const imp = new MultiInputs({ title: "Import From File", children: [ImportHeightmapFile] })
+
+    const updateTerrain = new Button("Update Terrain").style(buttonStyle)
+
+
+
+    const terrain = new Panel({ title: "Terain", children: [imp, resolution, updateTerrain] })
+        .style({
+            margin: '5px',
+            borderRadius: '4px',
+            backgroundColor: '#222',
+            gap: '5px'
         })
 
     const openActorEditor = new Button("Open in Actor Editor").style(buttonStyle)
@@ -340,7 +359,7 @@ function renderDetails(container) {
 
 
 
-    const meshInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden',  margin: '5px' })
+    const meshInput = new MiniPreview().style({ borderLeft: '1px solid #333', borderRadius: '5px', overflow: 'hidden', margin: '5px' })
     const mesh = new MultiInputs({ title: "Mesh", children: [meshInput] })
 
     const meshes = new Panel({ title: "Meshes", children: [mesh] })
@@ -465,7 +484,7 @@ function renderDetails(container) {
         })
 
 
-    const column = new Column({ children: [title, openActorEditor, reloadActor, transform, meshes, materials, light, physicsPanel] })
+    const column = new Column({ children: [title, openActorEditor, reloadActor, terrain, transform, meshes, materials, light, physicsPanel] })
         .style({
             margin: '5px',
             borderRadius: '4px',
@@ -499,6 +518,28 @@ function renderDetails(container) {
                     ? engine.reloadToScene(object)
                     : console.warn(`${object.name} does't have an original path`)
             }
+
+
+
+
+        if (object.type == 'Terrain') {
+            terrain.show(true)
+
+            ImportHeightmapFile.onChanged = () => {
+                const file = ImportHeightmapFile.element.files[0]
+                if (file) object.updateHeightmap(file.path)
+                ImportHeightmapFile.element.value = "";
+            }
+        }
+
+
+
+
+
+
+
+
+
 
         translateX.setValue(object.position.x).onChanged = value => object.position.x = value
         translateY.setValue(object.position.y).onChanged = value => object.position.y = value
@@ -618,14 +659,14 @@ function renderDetails(container) {
             physicsPanel.show(true)
             physics.forEach(physic => {
                 physic.container.show(false)
-                if(physic.container.setValue){
+                if (physic.container.setValue) {
                     physic.container.show(true)
-                    if(object.userData.physics[physic.destination]){
+                    if (object.userData.physics[physic.destination]) {
                         physic.container.setValue(object.userData.physics[physic.destination])
                         physic.container.onChanged = (value) => object.userData.physics[physic.destination] = value
                     }
                 }
-                
+
             })
         } else {
             physicsPanel.show(false)
@@ -643,4 +684,4 @@ function renderDetails(container) {
 
 window.renderDetails = renderDetails
 
-document.dispatchEvent(new CustomEvent('panelReady', {detail: {panel: renderDetails, title: 'Details'}}))
+document.dispatchEvent(new CustomEvent('panelReady', { detail: { panel: renderDetails, title: 'Details' } }))
