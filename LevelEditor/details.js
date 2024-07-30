@@ -314,14 +314,14 @@ function renderDetails(container) {
     const rY = new Input("y", 'number').style({ borderLeft: '2px solid #333', minWidth: '40px', maxWidth: '40px', padding: '3px 5px', })
     const resolution = new MultiInputs({ title: "Resolution", children: [rX, rY] })
 
-    const ImportHeightmapFile = new Input("Import From File", 'file').style({ borderLeft: '2px solid #333', minWidth: '40px', maxWidth: '40px', padding: '3px 5px', })
+    const ImportHeightmapFile = new Input("Import From File", 'file').style({ borderLeft: '2px solid #333', minWidth: '100px', maxWidth: '100px', padding: '3px 5px', })
     const imp = new MultiInputs({ title: "Import From File", children: [ImportHeightmapFile] })
 
     const updateTerrain = new Button("Update Terrain").style(buttonStyle)
 
 
 
-    const terrain = new Panel({ title: "Terain", children: [imp, resolution, updateTerrain] })
+    const terrain = new Panel({ title: "Terrain", children: [imp, resolution, updateTerrain] })
         .style({
             margin: '5px',
             borderRadius: '4px',
@@ -525,11 +525,21 @@ function renderDetails(container) {
         if (object.type == 'Terrain') {
             terrain.show(true)
 
-            ImportHeightmapFile.onChanged = () => {
-                const file = ImportHeightmapFile.element.files[0]
+            ImportHeightmapFile.setValue(object.heightmap).onChanged = () => {
+                const file = ImportHeightmapFile.input.files[0]
                 if (file) object.updateHeightmap(file.path)
                 ImportHeightmapFile.element.value = "";
             }
+
+            rX.setValue(object.rX).onChanged = (value) => object.rX = Number(value)
+            rY.setValue(object.rY).onChanged = (value) => object.rY = Number(value)
+
+            updateTerrain.onClick = ()=>{
+                object.updateHeightmap(object.heightmap, rX.getValue(), rY.getValue())
+            }
+
+        } else{
+            terrain.show(false)
         }
 
 
