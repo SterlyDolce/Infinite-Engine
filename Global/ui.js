@@ -140,32 +140,54 @@ class Checkbox extends UI {
     }
 }
 
+let inputId = 0
+
 class Input extends UI {
     constructor(placeholder, type = 'text') {
         super()
+        this.id = inputId++
         this.isInput = true
+        this.type = type
         this.IEui = true;
-        this.element = document.createElement('input');
-        this.element.type = type
-        this.element.style.margin = '0px'
+        if(type == 'file'){
+            this.input = document.createElement('input');
+            this.input.style.display = 'none'
+            this.input.type = type
+            this.input.id = 'input'+this.id
+            this.element = document.createElement('label');
+            this.element.textContent = this.input.value || 'Select from file'
+            this.element.htmlFor = 'input'+this.id
+            this.element.style.margin = '0px'
 
-        this.element.placeholder = placeholder
-
-        this.element.onchange = () => {
-            this.onChanged(this.element.value)
+            document.body.appendChild(this.input)
+        
+            this.input.onchange = () => {
+                this.onChanged(this.input.value)
+            }
+        } else{
+            this.element = document.createElement('input');
+            this.element.type = type
+            this.element.style.margin = '0px'
+    
+            this.element.placeholder = placeholder
+    
+            this.element.onchange = () => {
+                this.onChanged(this.element.value)
+            }
         }
+        
     }
 
     setValue(value) {
-        if (this.element.type === 'image') {
-            this.element.src = value
+        if (this.type === 'file') {
+            this.element.textContent = value
             return this
-        }
-        this.element.value = value
+        } else this.element.value = value
         return this
     }
 
     getValue() {
+        if (this.type === 'file') return this.input.value
         return this.element.value
     }
 
@@ -1260,7 +1282,6 @@ class GridContent extends UI {
                 } else {
                     this.context.open(this.selectObjects, e.x, e.y)
                 }
-
             }
 
             const previewRender = document.createElement('div')
@@ -1495,16 +1516,22 @@ class PieMenu extends UI {
         this.element.id = 'Pi';
         this.options = [];
         this.radius = radius;   // radius of the pie menu
-        this.angleStep = 0; // angle between each option, calculated on show
+        this.angleStep = 0;     // angle between each option, calculated on show
         this.selectedOption = null;
 
+        const svg = document.getElementById('plSVG');
+        svg.addEventListener('mousedown', (e)=>{
+            if(e.buttons == 2){
+                this.back()
+            }
+        })
 
-        this.line = document.getElementById('PieLine')
+        this.line = document.getElementById('PieLine');
 
-        this.endX = 0
-        this.endY = 0
+        this.endX = 0;
+        this.endY = 0;
 
-        this.navigationStack = []
+        this.navigationStack = []; // Stack to store previous menu states
     }
 
     createMenu() {
@@ -1519,7 +1546,7 @@ class PieMenu extends UI {
     }
 
     createOptionElement(option, x, y) {
-        option.uuid = THREE.generateUUID()
+        option.uuid = THREE.generateUUID();
         let element = document.createElement('div');
         element.className = 'pie-menu-option';
         element.style.position = 'absolute';
@@ -1535,37 +1562,44 @@ class PieMenu extends UI {
                 });
                 element.classList.add('selectedPie');
             }
-            
 
-            if(option.items && option.items[0]){
-                this.navigationStack.push(this.options)
-                const bbox = element.getBoundingClientRect()
-                const centerX = bbox.x + bbox.width/2
-                const centerY = bbox.y + bbox.height/2
-                this.clearSelection()
-                this.hide()
-
-                this.show(centerX, centerY, [
-                    {label: option.label, items: this.navigationStack.pop()},
-                    ...option.items])
+            if(option.items && option.items.length > 0){
+                this.navigationStack.push(this.options);
+                this.showSubmenu(option, element);
             }
         };
-        option.element = element
+        option.element = element;
         return element;
     }
 
-    back(centerX, centerY){
-        console.log('back')
+    showSubmenu(option, element) {
+        const bbox = element.getBoundingClientRect();
+        const centerX = bbox.x + bbox.width / 2;
+        const centerY = bbox.y + bbox.height / 2;
+        this.clearSelection();
+        this.hide();
+        this.show(centerX, centerY, [
+            {label: 'Back', action: () => this.back()},
+            ...option.items
+        ]);
+    }
+
+    back() {
+        if (this.navigationStack.length > 0) {
+            const previousOptions = this.navigationStack.pop();
+            this.hide();
+            this.show(this.centerX, this.centerY, previousOptions);
+        }
     }
 
     show(centerX, centerY, options = this.options) {
-        if(options.length == 0) return
+        if (options.length === 0) return;
         this.options = options; // array of menu options
         this.centerX = centerX; // center X coordinate
         this.centerY = centerY; // center Y coordinate
         this.angleStep = 2 * Math.PI / options.length;
-        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'block'
-        this.line = document.getElementById('PieLine')
+        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'block';
+        this.line = document.getElementById('PieLine');
         this.line.setAttribute('x1', centerX);
         this.line.setAttribute('y1', centerY);
         this.createMenu();
@@ -1579,24 +1613,24 @@ class PieMenu extends UI {
         }
 
         if (document.getElementById('Pi')) document.getElementById('Pi').remove();
-        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'none'
-        
+        if (document.getElementById('plSVG')) document.getElementById('plSVG').style.display = 'none';
     }
 
-    update(x, y){
-        this.endX = x
-        this.endY = y
+    update(x, y) {
+        this.endX = x;
+        this.endY = y;
 
-        if(x - this.centerX < 50 && y - this.centerX < 50) this.clearSelection()
+        if (x - this.centerX < 50 && y - this.centerX < 50) this.clearSelection();
     }
 
-    clearSelection(){
+    clearSelection() {
         document.querySelectorAll('.pie-menu-option').forEach(option => {
             option.classList.remove('selectedPie');
         });
         this.selectedOption = null;
     }
 }
+
 
 
 
