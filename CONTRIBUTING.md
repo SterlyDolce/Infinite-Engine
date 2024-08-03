@@ -22,6 +22,7 @@ Clone your forked repository to your local machine:
 ```bash
 git clone https://github.com/SterlyDolce/Infinite-Engine.git
 ```
+make sure replace "SterlyDolce" with from your GitHub account name.
 
 ### 3. Create a Branch
 Create a new branch for your feature, bug fix, or documentation update:
