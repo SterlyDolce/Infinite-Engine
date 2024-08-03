@@ -20,7 +20,7 @@ Start by [forking the repository](https://github.com/SterlyDolce/Infinite-Engine
 ### 2. Clone the Repository
 Clone your forked repository to your local machine:
 ```bash
-git clone https://github.com/your-username/Infinite-Engine.git
+git clone https://github.com/SterlyDolce/Infinite-Engine.git
 ```
 
 ### 3. Create a Branch
