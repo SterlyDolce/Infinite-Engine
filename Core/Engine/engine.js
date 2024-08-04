@@ -22,6 +22,7 @@ class Engine {
         this.focus = null;
         this.IEui = null
         this.IUG = null
+        this.Loom = new Loom()
         this.activeScene = null
         this.stateManager = new StateManager();
         this.deselectObject = () => { };
@@ -31,26 +32,52 @@ class Engine {
         this.openNewMap = async (map) => { };
         this.addObject = (Object, Parent) => { };
         this.showLoaderModal = (xhr) => { };
+        this.addNode = () => { };
 
 
         this.pieMenu = {
             Viewport: [
                 { label: 'Delete', action: () => this.deleteSelectedObjects() },
-                { label: 'GeneratedTerrain', action: () => engine.addGeneratedTerrain() },
+                { label: 'GeneratedTerrain', action: () => this.addGeneratedTerrain() },
                 {
-                    label: 'Add ', items : [
-                        {label: "Directional Light", action: () => {
+                    label: 'Add ', items: [
+                        {
+                            label: "Directional Light", action: () => {
 
-                            const directionalLight = new this.THREE.DirectionalLight(0xffffff, 0.5);
-                            directionalLight.name = 'light'
-                            this.addObject(directionalLight,  this.activeScene.children[0]);
-                        }},
-                        {label: 'PointLight', action: () => {
+                                const directionalLight = new this.THREE.DirectionalLight(0xffffff, 0.5);
+                                directionalLight.name = 'light'
+                                this.addObject(directionalLight, this.activeScene.children[0]);
+                            }
+                        },
+                        {
+                            label: 'PointLight', action: () => {
 
-                            const pointLight = new this.THREE.PointLight(0xffffff, 0.5, 100);
-                            pointLight.name = 'light'
-                            this.addObject(pointLight,  this.activeScene.children[0]);
-                        }}
+                                const pointLight = new this.THREE.PointLight(0xffffff, 0.5, 100);
+                                pointLight.name = 'light'
+                                this.addObject(pointLight, this.activeScene.children[0]);
+                            }
+                        }
+                    ]
+                }
+            ],
+            Visual: [
+                { label: 'Delete', action: () => this.deleteSelectedObjects() },
+                { label: 'recent', action: () => { } },
+                {
+                    label: 'Add', items: [
+                        {
+                            label: 'Functions', items: [
+                                { label: 'Create Function', action: () => { } },
+                                { label: 'Log', action: () => { } },
+                                { label: 'Spawn Object', action: () => { } },
+                                { label: 'Color', action: () => { } },
+                            ]
+                        }, {
+                            label: 'Variables', items: [
+                                { label: 'Create Variables', action: () => { } },
+                                { label: 'Self', action: () => { } },
+                            ]
+                        }
                     ]
                 }
             ]
@@ -431,6 +458,20 @@ class Engine {
         if (indicator) indicator.style.display = 'none';
     }
 
+    openPlayer() {
+        ipcRenderer.invoke('OpenPlayer', { someData: 'example' })
+            .then(response => {
+                if (response.success) {
+                    console.log('Player window opened successfully.');
+                } else {
+                    console.error('Failed to open player window:', response.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error during IPC communication:', error);
+            });
+    }
+
     async saveProject(projectName) {
         if (!projectName) {
             console.error("Project name is required to save a new project.");
@@ -743,20 +784,13 @@ class Engine {
 
     openEditor(filepath) {
         const { type } = this.getFileInfo(filepath)
-        document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: filepath, type: type } }))
-        // switch (type) {
-        //     case 'Actor':
-        //         // ipcRenderer.invoke('open-actor-editor', filepath);
-        //         break;
+        if (type === 'Script') {
+            document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: filepath, type: type, arrangement: filepath.replace('loom', 'lmc') } }))
 
-        //     case 'UI':
+        } else {
+            document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: filepath, type: type } }))
 
-        //         // ipcRenderer.invoke('open-ui-editor', filepath);
-        //         break;
-
-        //     default:
-        //         break;
-        // }
+        }
     }
 
     executeUI(ui, scene, camera) {
@@ -916,6 +950,40 @@ if (onTick):
         this.dispatchEvent('sceneUpdated', { mainScene: this.mainScene });
     }
 }
+
+
+
+
+
+
+
+class Loom {
+    constructor() {
+
+    }
+    async load(filePath, arrangement) {
+
+
+        const value = fs.readFileSync(arrangement, { encoding: 'utf-8' })
+
+        return JSON.parse(value)
+    }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if (window.localStorage.getItem('Project')) {
     const Project = JSON.parse(window.localStorage.getItem('Project'));

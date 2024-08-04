@@ -1,0 +1,79 @@
+{
+    "nodes": [
+      {
+        "id": "node1",
+        "type": "function_definition",
+        "position": {
+          "x": 300,
+          "y": 50
+        },
+        "properties": {
+          "name": "testing",
+          "parameters": []
+        },
+        "outputs": [
+          {
+            "name": "body",
+            "connected_to": "node2.input"
+          }
+        ]
+      },
+      {
+        "id": "node2",
+        "type": "function_call",
+        "position": {
+          "x": 300,
+          "y": 350
+        },
+        "properties": {
+          "function_name": "log",
+          "message": "\"hi\""
+        },
+        "inputs": [
+          {
+            "name": "",
+            "connected_to": "node1.body"
+          },
+          {
+            "name": "input",
+            "type": "variable"
+          }
+        ]
+      },
+      {
+        "id": "node3",
+        "type": "event_handler",
+        "position": {
+          "x": -300,
+          "y": 50
+        },
+        "properties": {
+          "event": "KeyT"
+        },
+        "outputs": [
+          {
+            "name": "body",
+            "connected_to": "node4.input"
+          }
+        ]
+      },
+      {
+        "id": "node4",
+        "type": "function_call",
+        "position": {
+          "x": -300,
+          "y": 350
+        },
+        "properties": {
+          "function_name": "testing"
+        },
+        "inputs": [
+          {
+            "name": "input",
+            "connected_to": "node3.body"
+          }
+        ]
+      }
+    ]
+  }
+  

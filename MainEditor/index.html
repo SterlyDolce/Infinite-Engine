@@ -27,7 +27,8 @@
 </head>
 
 <body>
-        <svg style="position: absolute; top: 0px; left: 0px; z-index: 1234567889; display: none;" id="plSVG"  height="100vh" width="100vw">
+        <svg style="position: absolute; top: 0px; left: 0px; z-index: 1234567889; display: none;" id="plSVG"
+                height="100vh" width="100vw">
                 <line x1=0 y1=0 x2=500 y2="200" style="stroke:#333;stroke-width:5" id="PieLine" />
                 Sorry, your browser does not support inline SVG.
         </svg>
@@ -82,11 +83,16 @@
                                 case "UI":
                                         get('../UIEditor')
                                         break;
+                                case "Script":
+                                        get('../NodeEditor')
+                                        break;
                                 default:
                                         break;
                         }
 
                 }
+
+
         </script>
 
 

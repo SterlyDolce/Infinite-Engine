@@ -1,0 +1,5 @@
+func testing():
+    log("hi")
+
+Event KeyT:
+    testing()

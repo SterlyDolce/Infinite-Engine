@@ -442,7 +442,9 @@ shortcuts.addShortcut('Ctrl+Shift+u', () => {
     engine.hideUI();
 });
 
-
+shortcuts.addShortcut('Alt+p', () => {
+    engine.openPlayer();
+});
 
 
 

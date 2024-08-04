@@ -43,16 +43,30 @@ function renderEditor(container) {
 
 }
 
+
+
 document.addEventListener('openEditor', (e) => {
     const filepath = e.detail.filePath
+    const arrangement = e.detail.arrangement
     const fileExtension = path.extname(filepath)
     const fileName = path.basename(filepath, fileExtension)
     mainLayout.root.contentItems[0].addChild(editoConfig(fileName, { filePath: filepath }));
     document.addEventListener('EditorReady', renderEditor)
 
     function renderEditor(e){
-        e.detail.render(filepath, fileName)
+        e.detail.render(filepath, fileName, arrangement)
         document.removeEventListener('EditorReady', renderEditor)
     }
 })
+
+
+
+// // temp
+// document.addEventListener('click', openNodeEditor)
+
+// function openNodeEditor(){
+//     document.dispatchEvent(new CustomEvent('closeWelcomePage', { detail: {} }))
+//     document.dispatchEvent(new CustomEvent('openEditor', { detail: { filePath: "C:/Users/sterl/Documents/Infinite-Engine/assets/test.loom", type: 'Script', arrangement: "C:/Users/sterl/Documents/Infinite-Engine/assets/test.json"} }))
+//     document.removeEventListener('click', openNodeEditor)
+// }
 

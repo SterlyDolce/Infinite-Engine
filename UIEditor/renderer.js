@@ -48,7 +48,6 @@ function renderUIEditor(filepath, id) {
             document.dispatchEvent(new CustomEvent('contentChanged', { detail: { defaultContentBrowser: true } }))
             window.renderContentBrowser(container);
             engine.addPanel(container)
-
         }
 
 

@@ -6,6 +6,7 @@ const os = require('os')
 const mainPath = path.join(__dirname, 'MainEditor', 'index.html');
 const UIEditorPath = path.join(__dirname, 'UIEditor', 'index.html');
 const ActorEditorPath = path.join(__dirname, 'ActorEditor', 'index.html');
+const NodeEditorPath = path.join(__dirname, 'NodeEditor', 'index.html');
 
 let inputPath = mainPath;
 
@@ -43,6 +44,29 @@ function openEditor(parentWindow, object, EditorPath) {
     });
 
     editorWindow.loadFile(EditorPath);
+
+    
+
+    editorWindow.webContents.on('did-finish-load', () => {
+        editorWindow.webContents.send('data', object);
+    });
+}
+
+function playerWindow(parentWindow, object) {
+    const editorWindow = new BrowserWindow({
+        width: 1920,
+        height: 1080,
+        backgroundColor: 'black',
+        // parent: parentWindow,
+        // modal: true,
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        },
+        autoHideMenuBar: true
+    });
+
+    editorWindow.loadFile(path.join('Player', 'index.html'));
 
     
 
@@ -98,6 +122,10 @@ app.whenReady().then(() => {
     ipcMain.handle('open-ui-editor', (event, object) => {
         openEditor(mainWindow, object, UIEditorPath); // Pass the main window as the parent
     });
+
+    ipcMain.handle('OpenPlayer', (event, data)=>{
+        playerWindow(mainWindow, data)
+    })
 
     ipcMain.handle('createNew', (event, version) => {
         const createNewPath = path.join(__dirname, 'createNew', 'index.html');
