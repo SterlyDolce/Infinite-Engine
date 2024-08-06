@@ -5,8 +5,9 @@
 ## Overview
 
 **Infinite Engine (IE)** is an advanced game engine built using Three.js, designed to provide developers with powerful tools to create immersive 3D experiences. The engine includes its own scripting language, **Loom**, which offers flexibility and ease of use for game developers.
+You can join our reddit if interested [Link](https://www.reddit.com/r/InfiniteEngineDev/)
 
-**Contributors** please visit ![The Contributor Page](https://github.com/SterlyDolce/Infinite-Engine/blob/main/CONTRIBUTING.md)
+**Contributors** please visit [The Contributor Page](https://github.com/SterlyDolce/Infinite-Engine/blob/main/CONTRIBUTING.md)
 
 ## Screenshots
 - **Main Editor**
