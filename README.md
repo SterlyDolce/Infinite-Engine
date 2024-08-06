@@ -10,7 +10,7 @@
 
 ## Screenshots
 - **Main Editor**
-  ![Main Editor](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Main%20Editor.png)
+  [Main Editor](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Main%20Editor.png)
   When open the Engine, you're you greeting with a blank screen that gives you the option to create or open a project.
 - **Level Editor**
   ![Level Editor](https://raw.githubusercontent.com/SterlyDolce/Infinite-Engine/main/Level%20Editor.png)
