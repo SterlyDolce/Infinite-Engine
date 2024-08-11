@@ -120,13 +120,17 @@ Loom provides a straightforward way to handle events.
 
 ```loom
 Event eventName:
-    # event handling code
+    EventType:
+        # event handling code
 ```
 
 - **Example:**
   ```loom
   Event keyW:
-      log("W key pressed");
+      Pressed:
+          log("W key pressed");
+      Released:
+          log("W key was released)
   ```
 
 ### **3.7 Classes and Objects**
