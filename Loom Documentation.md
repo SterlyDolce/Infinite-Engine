@@ -56,6 +56,9 @@ variableName : Type = value;
   ```loom
   var age : int = 10;
   ```
+  ```loom
+  age : int = 10; # var is optional as it automatically if uses age : int = 10;
+  ```
 
 ### **3.2 Data Types**
 Loom supports various primitive and custom data types:
@@ -243,7 +246,8 @@ int add(x : int, y : int):
     return x + y;
 
 Event keyW:
-    log("The W key was pressed");
+    Pressed:
+        log("The W key was pressed");
 ```
 
 ## **5. Advanced Features**
