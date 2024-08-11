@@ -28,22 +28,22 @@ You can join our reddit if interested [Link](https://www.reddit.com/r/InfiniteEn
 - ```loom
   # Player Actor
   
-  var scope = self
+  var scope : Object = self
 
   class Health:
-     var amount = 100
-     constructor():
-        set scope.health = self
+     var amount : int = 100
+     Public ():
+        scope.health = self
         return self
 
-     gainHealth(amount):
-        var current_amount = self.amount
-        set self.amount = current_amount + amount
+     void gainHealth(amount):
+        self.amount += amount
 
-  var health = Health()
+  var health : Health;
 
   Event KeyQ:
-     health.gainHealth(20)
+    Pressed:
+      health.gainHealth(20)
   
   ```
      
